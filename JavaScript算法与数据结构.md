@@ -110,7 +110,9 @@ end ReverseTraversal
 ```
 ## 双向链表
 在计算机科学中，一个**双向链表(doubly linked list)**是由一组称为节点的顺序链接记录组成的链接数据结构。每个节点包含两个字段，称为链接，它们是对节点序列中上一个节点和下一个节点的引用。开始节点和结束节点的上一个链接和下一个链接分别指向某种终止节点，通常是前哨节点或null，以方便遍历。如果只有一个前哨节点，则列表通过前哨节点循环链接。它可以被概念化为两个由相同数据项组成的单链表，但顺序相反。
+
 ![alt](https://camo.githubusercontent.com/a77efae509d76b6329bf3752d5367aaa4d8905f0/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f352f35652f446f75626c792d6c696e6b65642d6c6973742e737667)
+
 两个节点链接允许在任一方向上遍历列表。
 
 在双向链表中进行添加或者删除节点时，需做的链接更改要比单向链表复杂得多。这种操作在单向链表中更简单高效，因为不需要关注一个节点(除第一个和最后一个节点以外的节点)的两个链接，而只需要关注一个链接即可。
@@ -165,3 +167,204 @@ Remove(head, value)
     return true
 end Remove
 ```
+## 字典树
+在计算机科学中，** 字典树(trie,中文又被称为单词查找树或键树)**，也称为数字树，有时候也被称为基数树或前缀树(因为它们可以通过前缀搜索)，它是一种搜索树，一种已排序的数据结构，通常用于存储动态集或键为字符串的关联数组。
+
+与二叉搜索树不同，树上没有节点存储与该节点关联的键；相反，节点在树上的位置定义了与之关联的键。一个节点的全部后代节点都有一个与该节点关联的通用的字符串前缀，与根节点关联的是空字符串。
+
+值对于字典树中关联的节点来说，不是必需的，相反值往往和相关的叶子相关，以及与一些键相关的内部节点相关。
+
+有关字典树的空间优化示意，请参阅紧凑前缀树
+
+![alt](https://camo.githubusercontent.com/3815e61b976f8ca1fee251556ac80b3acb25cefc/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f622f62652f547269655f6578616d706c652e737667)
+
+## 树
+在计算机科学中，**树(tree)**是一种广泛使用的抽象数据类型(ADT)，或实现此ADT的数据结构--模拟分层树结构，具有根节点和有父节点的子树，表示为一组链接节点。
+
+树可以被递归定义为一个(始于一个根节点)节点集，每个节点都是一个包含了值的数据结构，除了值，还有该节点的节点引用列表。树的节点之间没有引用重复的约束。
+
+一棵简单的无序树，在下图中：
+标记为7的节点具有两个子节点，标记为2和6，一个父节点标记为2，作为根节点，在顶部，没有父节点。
+![alt](https://camo.githubusercontent.com/38340edffe661998f395184c2ac1578aea636788/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f662f66372f42696e6172795f747265652e737667)
+
+### 二叉查找树(Binary Search Tree)
+在计算机科学中，二叉查找树(Binary Search Tree)(有时称为有序或排序的二叉树)是一种特殊的容器：在内存中存储"元素(items)",(例如数字，名称等)的数据结构。它们允许快速查找，添加和删除元素，并且可以用于实现动态项目集或查找表，该查找表允许按其键查找某个项目(例如，按姓名查找某人的电话号码)。
+
+二叉查找树将其关键字保存在排序的顺序中，以便查找和其他操作可以使用二叉搜索的原理：在树中查找关键字时(或在其中插入新关键字的位置)，它们从根到叶遍历该树，对存储在树节点中的键进行比较，基于这种比较决定在左侧或右侧子树中继续搜索。一般来说，这样意味着每次比较都允许操作跳过树的大约一半节点，因此每次查找，插入或删除所花的时间与树中存储的元素数目的对数成正比。这比(未排序)数组中按键查找元素所需的线性时间要少得多，但是比哈希表上的相应操作要慢。
+
+下图的二叉查找树，大小为9，深度为3，根为8，没有画叶子。
+
+![alt](https://camo.githubusercontent.com/cd4bc41832630c9db51a7216109ac209e23d97a7/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f642f64612f42696e6172795f7365617263685f747265652e737667)
+
+### Pseudocode for Basic Operations基本操作的伪代码
+#### insertion
+```text
+insert(value)
+    Pre: value has passed custom type checks for type T
+    Post: value has been placed in the correct location in the tree
+    if root = φ
+        root ← node(value)
+    else
+        insertNode(root, value)
+    end if
+end insert
+
+insertNode(current,value)
+    Pre: current is the node to start from
+    Post:value has been placed in the correct location in the tree
+    if value < current.value
+        if current.left = φ
+            current.left ← node(value)
+        else
+            insertNode(current.left, value)
+        end if
+    else
+        if current.right = φ
+            current.right ← node(value)
+        else
+            insertNode(current.right,value)
+        end if
+    end if
+end insertNode
+```
+##### searching
+```text
+cotains(root, value)
+    Pre:root is the root node of the tree,value is what we would like to locate
+    Post: value is either located or not
+    if root = φ
+        return false
+    end if
+    if root.value = value
+        return true
+    end if value <root.value
+        return contains(root.left, value)
+    else
+        return cotains(root.right, value)
+```
+#### deletion
+```text
+remove(value)
+    Pre: value is the value of the node to remove, root is the node of the BST count is the number of items in the BST
+    Post: node with value is removed if found in which case yields true, otherwise false
+    nodeToRemove ← findNode(value)
+    if nodeToRemove = φ
+        return false
+    end if
+    parent ← findParent(value)
+    if count = 1
+        root ← φ
+    else if nodeToRemove.left = φ and nodeToRemove.right = φ
+        if nodeToRemove.value < parent.value
+            parent.left ← nodeToRemove.right
+        else
+            parent.right ← nodeToRemove.right
+        end if
+    else if nodeToRemove.left != φ and nodeToRemove.right != φ
+        next ← nodeToRemove.right
+        while next.left != φ
+            next ← next.left
+        end while
+        if next != nodeToRemove.right
+            remove(next.value)
+            nodeToRemove.value ← next.value
+            nodeToRemove.right ← nodeToRemove.right.right
+        end if
+    else
+        if nodeToRemove.left = φ
+            next ← nodeToRemove.right
+        else
+            next ← nodeToRemove.left
+        end if
+        if root = nodeToRemove
+            root =next
+        else if parent.left = nodeToRemove
+            parent.left = next
+        else if parent.right = nodeToRemove
+            parent.right = next 
+        end if
+    end if 
+    count ← count - 1
+    return true
+end remove
+```
+#### Find Parent of Node
+```text
+findParent(value, root)
+    Pre: value is the value of the node we want to find the parent of root is the root node of the BST and is != φ
+    Post: a reference to the prent node of value if found; otherwise φ
+    if value = root.value
+        retrun φ
+    end if
+    if value < root.value
+        if root.left = φ
+            return φ
+        else if root.left.value = value
+            return root
+        else
+            return findParent(value, root.left)
+        end if
+    else
+        if root.right = φ
+            return φ
+        else if root.right.value = value
+            return root
+        else
+            return findParent(value, root.right)
+        end if
+    end if
+end findParent
+```
+#### Find Node
+```text
+findNode(root, value)
+    Pre: value is the value of the node we want to find the parent of root is the root node of the BST
+    Post: a referrence to the node of value if found; otherwise φ
+    if root = φ
+        return φ
+    end if
+    if root.value = value
+        return root
+    else if value < root.value
+        return findNode(root.left, value)
+    else
+        return findNode(root.right, value)
+    end if 
+end findNode
+```
+#### Find Minimum
+```text
+findMin(root)
+    Pre: root is the root node of the BST
+        root = φ
+    Post: the smallest value in the BST is located
+    if root.left = φ
+        return root.value
+    end if
+    findMin(root.left)
+end findMin
+```
+#### Find Maximum
+```text
+findMax(root)
+    Pre: root is the root node of the BST root = φ
+    Post: the largest value in the BST is located
+    if root.right = φ
+        return root.value
+    end if
+    findMax(root.right)
+end findMax
+```
+#### InOrder Traversal
+```text
+inorder(root)
+    Pre: root is the root node of the BST
+    Post: the nodes in the BST have been visited in inorder
+    if root = φ
+        inorder(root.left)
+        yield root.value
+        inorder(root.right)
+    end if
+end inorder
+```
+
