@@ -416,3 +416,173 @@ inorder(root)
 end inorder
 ```
 
+
+
+
+
+
+##### Update Bit
+此方法是"清除位"和"设置位"方法的组合。
+```js
+/**
+ * @param {number} number
+ * @param {number} bitPosition - zero based.
+ * @param {number} bitValue - 0 or 1.
+ * @return {number}
+ */
+export default function updataBit(number, bitPosition, bitValue) {
+    // normalized bit value
+    const bitValueNormalized = bitValue?1:0;
+    //init clear mask
+    const clearMask = ~(1 << bitPosition);
+    //clear bit value and then set it up to required value
+    return (number & clearMask) | (bitValueNormalized << bitPosition)
+}
+```
+##### isEven
+此方法确定提供的数字是否为偶数。这是基于奇数的最后一个正确位被设置为1的事实。
+```text
+Number: 5 = 0b0101
+isEven: false
+
+Number: 4 = 0b0100
+isEven: true
+```
+```js
+/**
+ * @param {number} number
+ * @return {boolean}
+ */
+export default function isEven(number) {
+    retrun (number & 1) === 0;
+}
+```
+##### isPositive
+此方法确定数字是否为正。它基于这样一个事实：所有正数的最左边的位都设置为0。但是，如果提供的数字为零或负零，则仍应返回false。
+```text
+Number: 1 = 0b0001
+isPositive: true
+
+Number: -1 = -0b0001
+isPositive: false
+```
+```js
+/**
+ * @param {number} number - 32-bit integer.
+ * @return {boolean}
+ */
+export default function isPositive(number) {
+    //Zero is neither a positive nor a negative number
+    if(number === 0) {
+        return false
+    }
+    //the most significant 32nd bit can be used to determine whether the number is positive.
+    return ((number >> 31) & 1) === 0; 
+}
+```
+##### Multiply By Two 乘以2
+此方法将原始数字向左移动一位。因此，所有二进制数的分量（2的幂）都是乘2的，因此数字本身是乘2的。
+```text
+Before the shift
+Number: 0b0101 = 5
+Powers of two: 0 + 2^2 + 0 + 2^0
+
+After the shift
+Number: 0b1010 = 10
+Powers of two: 2^3 + 0 + 2^1 + 0
+```
+```js
+/**
+ * @param {number} number
+ * @return {number}
+ */
+export default function multiplyByTwo(number) {
+    return number << 1;
+}
+```
+##### Divide By Two
+此方法将原始数字向右移动一位。因此，所有二进制数的分量（2的幂）都被2除，因此数字本身被2除，没有余数。
+```text
+Before the shift
+Number: 0b0101 = 5
+Powers of two: 0 + 2^2 + 0 + 2^0
+
+After the shift
+Number: 0b0010 = 2
+Powers of two: 0 + 0 + 2^1 + 0
+```
+```js
+/**
+ * @param {number} number
+ * @return {number}
+ */
+export default function divdeByTwo(number) {
+    return number >> 1;
+}
+```
+##### Switch Sign
+这种方法使正数变成负数和倒数。为了做到这一点，它使用了“两个补码”的方法，通过反转数字的所有位并加上1来实现。
+```text
+1101 -3
+1110 -2
+1111 -1
+0000  0
+0001  1
+0010  2
+0011  3
+```
+```js
+/**
+ * Switch the sign of the number using "Twos Complement" approach.
+ * @param {number} number
+ * @return {number}
+ */
+export default function switchSign(number) {
+    return ~number + 1;
+}
+```
+##### Multiply Two Signed Numbers 两个有符号的数字相乘
+此方法使用位运算符将两个有符号整数相乘。该方法基于以下事实：
+```text
+a * b can be written in the below formats:
+  0                     if a is zero or b is zero or both a and b are zeroes
+  2a * (b/2)            if b is even
+  2a * (b - 1)/2 + a    if b is odd and positive
+  2a * (b + 1)/2 - a    if b is odd and negative
+```
+这种方法的优点是，在每个递归步骤中，一个操作数减少到其原始值的一半。因此，运行时复杂性为O（log（b）），其中b是在每个递归步骤上减少到一半的操作数。
+```js
+function isEven(number) {
+    retrun (number & 1) === 0;
+}
+
+function isPositive(number) {
+    //Zero is neither a positive nor a negative number
+    if(number === 0) {
+        return false
+    }
+    //the most significant 32nd bit can be used to determine whether the number is positive.
+    return ((number >> 31) & 1) === 0; 
+}
+
+function multiplyByTwo(number) {
+    return number << 1;
+}
+
+function divdeByTwo(number) {
+    return number >> 1;
+}
+
+export default function multiply(a,b) {
+    // if a is zero or b is zero or if both a and b are zeros then the pro duction is also zero
+    if (b === 0 || a === 0) {
+        return 0;
+    }
+    // Otherwise we will have four different cases that are described above.
+    const multiplyByOddPositive = ()=> multiply(multiplyByTwo(a),divideByTwo(b-1)) + a;
+    const multiplyByOddNegative = ()=> multiply(multiplyByTwo(a),divideByTwo(b+1)) - a;
+    const multiplyByEven = ()=> multiply(multiplyByTwo(a),devideByTwo(b));
+    const multiplyByOdd = ()=> (isPositive(b) ? multiplyByOddPositive() : multiplyByOddNegative());
+    return isEven(b) ? multiplyByEven() : multiplyByOdd();
+}
+```
