@@ -6,7 +6,7 @@
 
 在最简单的形式下，每个节点由数据和到序列中下一个节点的引用组成。这种结构允许在迭代期间有效地从序列中的任何位置插入或删除元素。
 
-更复杂的变体添加额外的链接，允许有效地插入或删除任意元素引用。链表的一个缺点是访问时间是线性的(而且难以管道化)
+更复杂的辩题添加额外的链接，允许有效地插入或删除任意元素引用。链表的一个缺点是访问时间是线性的(而且难以管道化)
 
 如果需要更快的访问，如随机访问，是不可行的。与链表相比，数组具有更好的缓存位置。
 
@@ -166,58 +166,9 @@ Remove(head, value)
     return true
 end Remove
 ```
-## 队列
-在计算机科学中，一个队列(queue)是一种特殊类型的抽象数据类型或集合。集合中的实体按顺序保存。队列基本操作有两种：向队列的后端位置添加实体，称为入队，并从队列的前端位置移除实体，称为出队。队列中元素先进先出FIFO(first in , first out)示意
-
-![alt](https://camo.githubusercontent.com/7fecf0b843d5f7b26e4514b4e9e047d6c84ee76b/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f352f35322f446174615f51756575652e737667)
-
-## 栈
-在计算机科学中，一个栈(stack)是一种抽象数据类型，用作表示元素的结合，具有两种主要操作：
-* push，添加元素到栈的顶端(末尾)
-* pop，移除栈最顶端(末尾)的元素
-
-以上两种操作可以简单概括为后进先出(LIFO = last in, first out)
-此外，应有一个`peek`操作用于访问当亲顶端(末尾)的元素
-
-![alt](https://camo.githubusercontent.com/464c4087d283619fe8e8c77cf5805e45faa54ca9/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f622f62342f4c69666f5f737461636b2e706e67)
-
-## 哈希表
-在计算中，一个哈希表(hash table 或hash map)是一种实现**关联数组(associative array)**的抽象数据类型，该结构可以将**键映射到值**。
-
-哈希表使用**哈希函数/散列函数**来计算一个值在数组或桶(buckets)中或槽(slots)中对应的索引，可使用该索引找到所需的值。
-
-理想情况下，散列函数将为每个键分配给一个唯一的桶(bucket)，但是大多数哈希表设计采用不完美的散列函数，这可能会导致**哈希冲突(hash collisions)**,也就是散列函数为多个键生成了相同的索引，这种碰撞必须以某种方式进行处理。
-
-![hash table](https://camo.githubusercontent.com/2b2b396c714c8344d3928c46d6b0f6be47d3d8c8/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f372f37642f486173685f7461626c655f335f315f315f305f315f305f305f53502e737667)
-
-通过单独的链接解决哈希冲突
-
-![hash collision](https://camo.githubusercontent.com/404b54bac0302f96ef42dcd4c9bc4fc5ea03ec0b/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f642f64302f486173685f7461626c655f355f305f315f315f315f315f315f4c4c2e737667)
-
-## 堆(数据结构)
-在计算机科学中，一个堆(heap)是一种特殊的基于树的数据结构他满足下面描述的堆属性。
-在一个**最小堆(min heap)** 如果p是c的一个父级节点，那么p的key或(value)应小于或等于C的对应值
-
-![最小堆](https://camo.githubusercontent.com/16e4220b69a866f97cc20d934c4b16fe5b9147de/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f362f36392f4d696e2d686561702e706e67)
-
-在一个**最大堆(max heap)** 中,P的key(或value)大于C的对应值。
-
-![最大堆](https://camo.githubusercontent.com/cf3c66d0d2ed67af70a8bc500fc215526d266a0d/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f332f33382f4d61782d486561702e737667)
-
-在堆顶部的没有父级节点的节点，被称之为根节点。
-
-## 优先队列
-在计算机科学中，**优先级队列(priority queue)** 是一种抽象数据类型，它类似于常规的队列或栈，但每个元素都有与之关联的优先级
-
-在优先队列中，低优先级的元素之前应该是高优先级的元素，如果两个元素具有相同的优先级，则根据它们在队列中的顺序是它们的出现顺序即可。
-
-优先队列虽通常用堆来实现，但它在概念上与堆不同。优先队列是一个抽象概念，就像列表或图这样的抽象概念一样。
-
-正如列表可以用链表或数组实现一样，优先队列可以用堆或各种其他方法实现，例如无序数组
-
 ## 字典树
-在计算机科学中，**字典树(trie,中文又被称为单词查找树或键树)** 也称为数字树，有时候也被称为基数树或前缀树(因为它们可以通过前缀搜索)，它是一种搜索树，一种已排序的数据结构，通常用于存储动态集或键为字符串的关联数组。
-
+在计算机科学中，**字典树(trie,中文又被称为单词查找树或键树)**，也称为数字树，有时候也被称为基数树或前缀树(因为它们可以通过前缀搜索)，它是一种搜索树，一种已排序的数据结构，通常用于存储动态集或键为字符串的关联数组。
+                    
 与二叉搜索树不同，树上没有节点存储与该节点关联的键；相反，节点在树上的位置定义了与之关联的键。一个节点的全部后代节点都有一个与该节点关联的通用的字符串前缀，与根节点关联的是空字符串。
 
 值对于字典树中关联的节点来说，不是必需的，相反值往往和相关的叶子相关，以及与一些键相关的内部节点相关。
@@ -227,12 +178,13 @@ end Remove
 ![alt](https://camo.githubusercontent.com/3815e61b976f8ca1fee251556ac80b3acb25cefc/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f622f62652f547269655f6578616d706c652e737667)
 
 ## 树
-在计算机科学中，**树(tree)** 是一种广泛使用的抽象数据类型(ADT)，或实现此ADT的数据结构--模拟分层树结构，具有根节点和有父节点的子树，表示为一组链接节点。
+在计算机科学中，**树(tree)**是一种广泛使用的抽象数据类型(ADT)，或实现此ADT的数据结构--模拟分层树结构，具有根节点和有父节点的子树，表示为一组链接节点。
 
 树可以被递归定义为一个(始于一个根节点)节点集，每个节点都是一个包含了值的数据结构，除了值，还有该节点的节点引用列表。树的节点之间没有引用重复的约束。
 
 一棵简单的无序树，在下图中：
 标记为7的节点具有两个子节点，标记为2和6，一个父节点标记为2，作为根节点，在顶部，没有父节点。
+
 ![alt](https://camo.githubusercontent.com/38340edffe661998f395184c2ac1578aea636788/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f662f66372f42696e6172795f747265652e737667)
 
 ### 二叉查找树(Binary Search Tree)
@@ -415,174 +367,31 @@ inorder(root)
     end if
 end inorder
 ```
+## AVL Tree
+在计算机科学中，AVL树(以发明者Adelson-Velsky和Landis命名)是一种自平衡二叉搜索树，这是第一个被发明的数据结构。在AVL树中，任何节点的两个子树的高度最多相差1个。如果它们之间的任何时间差超过一个，则将进行重新平衡以恢复此属性。在平均和最坏的情况下，查找、删除和插入都需要O(log n)时间，其中n是操作之前树中的节点数。插入和删除可能需要通过一轮或多轮树的旋转来重新平衡树。
+动画显示了将几个元素插入到AVL树中，它包括左，右，左右和左右旋转。
 
+![alt](https://camo.githubusercontent.com/fa696e8874d67cb7b8a4af1bf8ea37d4f27106ce/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f662f66642f41564c5f547265655f4578616d706c652e676966)
 
+具有平衡因子的AVL树(green)
 
+![alt](https://camo.githubusercontent.com/74348f31202de4c1c0cff901ecaf1000da8a25a0/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f612f61642f41564c2d747265652d7742616c616e63655f4b2e737667)
 
+AVL Tree Rotations AVL树旋转
+Left-Left Rotation
 
+![alt](https://camo.githubusercontent.com/3478d784c4f30116de0b370dd24e4add6706814f/687474703a2f2f6274656368736d617274636c6173732e636f6d2f646174615f737472756374757265732f64735f696d616765732f4c4c253230526f746174696f6e2e706e67)
 
-##### Update Bit
-此方法是"清除位"和"设置位"方法的组合。
-```js
-/**
- * @param {number} number
- * @param {number} bitPosition - zero based.
- * @param {number} bitValue - 0 or 1.
- * @return {number}
- */
-export default function updataBit(number, bitPosition, bitValue) {
-    // normalized bit value
-    const bitValueNormalized = bitValue?1:0;
-    //init clear mask
-    const clearMask = ~(1 << bitPosition);
-    //clear bit value and then set it up to required value
-    return (number & clearMask) | (bitValueNormalized << bitPosition)
-}
-```
-##### isEven
-此方法确定提供的数字是否为偶数。这是基于奇数的最后一个正确位被设置为1的事实。
-```text
-Number: 5 = 0b0101
-isEven: false
+Right-Right Rotation
 
-Number: 4 = 0b0100
-isEven: true
-```
-```js
-/**
- * @param {number} number
- * @return {boolean}
- */
-export default function isEven(number) {
-    retrun (number & 1) === 0;
-}
-```
-##### isPositive
-此方法确定数字是否为正。它基于这样一个事实：所有正数的最左边的位都设置为0。但是，如果提供的数字为零或负零，则仍应返回false。
-```text
-Number: 1 = 0b0001
-isPositive: true
+![alt](https://camo.githubusercontent.com/13537dc13be798a9fc6450dd576ae1ce3af9e5ba/687474703a2f2f6274656368736d617274636c6173732e636f6d2f646174615f737472756374757265732f64735f696d616765732f5252253230526f746174696f6e2e706e67)
 
-Number: -1 = -0b0001
-isPositive: false
-```
-```js
-/**
- * @param {number} number - 32-bit integer.
- * @return {boolean}
- */
-export default function isPositive(number) {
-    //Zero is neither a positive nor a negative number
-    if(number === 0) {
-        return false
-    }
-    //the most significant 32nd bit can be used to determine whether the number is positive.
-    return ((number >> 31) & 1) === 0; 
-}
-```
-##### Multiply By Two 乘以2
-此方法将原始数字向左移动一位。因此，所有二进制数的分量（2的幂）都是乘2的，因此数字本身是乘2的。
-```text
-Before the shift
-Number: 0b0101 = 5
-Powers of two: 0 + 2^2 + 0 + 2^0
+Left-Right Rotation
 
-After the shift
-Number: 0b1010 = 10
-Powers of two: 2^3 + 0 + 2^1 + 0
-```
-```js
-/**
- * @param {number} number
- * @return {number}
- */
-export default function multiplyByTwo(number) {
-    return number << 1;
-}
-```
-##### Divide By Two
-此方法将原始数字向右移动一位。因此，所有二进制数的分量（2的幂）都被2除，因此数字本身被2除，没有余数。
-```text
-Before the shift
-Number: 0b0101 = 5
-Powers of two: 0 + 2^2 + 0 + 2^0
+![alt](https://camo.githubusercontent.com/ce7de7487ddbc5c274b8590bf89ed2e83d06f6df/687474703a2f2f6274656368736d617274636c6173732e636f6d2f646174615f737472756374757265732f64735f696d616765732f4c52253230526f746174696f6e2e706e67)
 
-After the shift
-Number: 0b0010 = 2
-Powers of two: 0 + 0 + 2^1 + 0
-```
-```js
-/**
- * @param {number} number
- * @return {number}
- */
-export default function divdeByTwo(number) {
-    return number >> 1;
-}
-```
-##### Switch Sign
-这种方法使正数变成负数和倒数。为了做到这一点，它使用了“两个补码”的方法，通过反转数字的所有位并加上1来实现。
-```text
-1101 -3
-1110 -2
-1111 -1
-0000  0
-0001  1
-0010  2
-0011  3
-```
-```js
-/**
- * Switch the sign of the number using "Twos Complement" approach.
- * @param {number} number
- * @return {number}
- */
-export default function switchSign(number) {
-    return ~number + 1;
-}
-```
-##### Multiply Two Signed Numbers 两个有符号的数字相乘
-此方法使用位运算符将两个有符号整数相乘。该方法基于以下事实：
-```text
-a * b can be written in the below formats:
-  0                     if a is zero or b is zero or both a and b are zeroes
-  2a * (b/2)            if b is even
-  2a * (b - 1)/2 + a    if b is odd and positive
-  2a * (b + 1)/2 - a    if b is odd and negative
-```
-这种方法的优点是，在每个递归步骤中，一个操作数减少到其原始值的一半。因此，运行时复杂性为O（log（b）），其中b是在每个递归步骤上减少到一半的操作数。
-```js
-function isEven(number) {
-    retrun (number & 1) === 0;
-}
+Right-Left Rotation
 
-function isPositive(number) {
-    //Zero is neither a positive nor a negative number
-    if(number === 0) {
-        return false
-    }
-    //the most significant 32nd bit can be used to determine whether the number is positive.
-    return ((number >> 31) & 1) === 0; 
-}
+![alt](https://camo.githubusercontent.com/7aa5ad4d208218243223ef54a68d1496cd14cc6e/687474703a2f2f6274656368736d617274636c6173732e636f6d2f646174615f737472756374757265732f64735f696d616765732f524c253230526f746174696f6e2e706e67)
 
-function multiplyByTwo(number) {
-    return number << 1;
-}
-
-function divdeByTwo(number) {
-    return number >> 1;
-}
-
-export default function multiply(a,b) {
-    // if a is zero or b is zero or if both a and b are zeros then the pro duction is also zero
-    if (b === 0 || a === 0) {
-        return 0;
-    }
-    // Otherwise we will have four different cases that are described above.
-    const multiplyByOddPositive = ()=> multiply(multiplyByTwo(a),divideByTwo(b-1)) + a;
-    const multiplyByOddNegative = ()=> multiply(multiplyByTwo(a),divideByTwo(b+1)) - a;
-    const multiplyByEven = ()=> multiply(multiplyByTwo(a),devideByTwo(b));
-    const multiplyByOdd = ()=> (isPositive(b) ? multiplyByOddPositive() : multiplyByOddNegative());
-    return isEven(b) ? multiplyByEven() : multiplyByOdd();
-}
-```
+## Red-Black Tree 红黑树
