@@ -6,9 +6,9 @@
 * 输出output
 * loader
 * 插件plugins
+
 ### 入口entry
-入口起点entry point指示webpack应该使用哪个模块，来作为构建其内部依赖图的开始。
-进入入口起点后,webpack会找出有哪些模块和库是入口起点依赖的(直接的和间接的)
+入口起点entry point指示webpack应该使用哪个模块，来作为构建其内部依赖图的开始。进入入口起点后,webpack会找出有哪些模块和库是入口起点依赖的(直接的和间接的)
 每个依赖项随机被处理，最后输出到称之为bundles的文件中。通过在webpack配置中配置entry属性，来指定一个入口起点(或多个入口起点)。默认值为`./src`
 `webpack.config.js`
 ```js
@@ -18,8 +18,7 @@ module.exports = {
 }
 ```
 ### 出口output
-output属性告诉webpack在哪里输出它所创建的bundles，以及如何命名这些文件，默认值为`./dist`。
-基本上，整个个应用程序结构，都会别编译到指定的输出路径的文件夹中。通过在配置中制定一个output字段，来配置这些处理过程。
+output属性告诉webpack在哪里输出它所创建的bundles，以及如何命名这些文件，默认值为`./dist`。基本上，整个个应用程序结构，都会别编译到指定的输出路径的文件夹中。通过在配置中制定一个output字段，来配置这些处理过程。
 `webpack.config.js`
 ```js
 const path = require('path')
@@ -61,11 +60,8 @@ module.exports =  config;
 >嘿，webpack编译器，当你碰到*在`require()/import`*语句中被解析为'.txt'的路径时，在你对它打包前，先使用`raw-loader`转换一下。
 
 ### 插件plugins
-loader被用于转换某些类型的模块，而插件则可以用用执行分为更广的任务。
-插件的范围包括，从打包优化和压缩，一直到重新定义环境中的变量。
-插件接口功能极其强大，可以用来处理各种各样的任务。
-想要使用一个插件，只需要require()它，然后把它添加到plugins数组中。
-多数插件可以通过选项option自定义。也可以在一个配置文件中因为不同目的而多次使用同一个插件，这时需要通过new操作符来创建它的一个实例。
+loader被用于转换某些类型的模块，而插件则可以用用执行分为更广的任务。插件的范围包括，从打包优化和压缩，一直到重新定义环境中的变量。插件接口功能极其强大，可以用来处理各种各样的任务。
+想要使用一个插件，只需要require()它，然后把它添加到plugins数组中。多数插件可以通过选项option自定义。也可以在一个配置文件中因为不同目的而多次使用同一个插件，这时需要通过new操作符来创建它的一个实例。
 `webpack.config.js`
 ```js
 const HtmlWebpackPlugin = require('html-webpack-plugin');//通过npm安装
@@ -105,9 +101,7 @@ const config = {
   }
 };
 ```
->向entry传入一个数组时会发生什么？
-向entry属性传入[文件路径数组]将创建'多个主入口'。
-如果想要多个依赖文件一起注入，并且将他们的依赖graph导向到一个chunk时，传入数组的方式就很有用。
+>向entry传入一个数组时会发生什么？向entry属性传入[文件路径数组]将创建'多个主入口'。如果想要多个依赖文件一起注入，并且将他们的依赖graph导向到一个chunk时，传入数组的方式就很有用。
 
 ##### 对象语法
 用法：`entry:{[entryChunkName: string]: string|Arry<string>}`
@@ -122,9 +116,7 @@ const config = {
 }
 module.exports = config;
 ```
->可扩展webpack配置是指，可重用并且可以与其他配置组合使用。
-这用于将关注点concern从环境environment、构建目标build target、运行时runtime中分离。
-然后用专门的工具webpack-merge将它们合并。
+>可扩展webpack配置是指，可重用并且可以与其他配置组合使用。这用于将关注点concern从环境environment、构建目标build target、运行时runtime中分离。然后用专门的工具webpack-merge将它们合并。
 
 ##### 常见场景
 **分离应用程序APP和第三方库vendor入口**
@@ -138,11 +130,9 @@ const config = {
 }
 module.exports = config;
 ```
-*这是什么？* 从表面上，这告诉我们webpack从app.js和vendor.js开始创建依赖图。
-这些依赖图是彼此完全分离互相独立的。这种方式比较常见于，只有一个入口起点(不包括verdor)的单页应用程序中。
-此设置允许你使用 CommonsChunkPlugin 从「应用程序 bundle」中提取 vendor 引用(vendor reference) 到 vendor bundle，
-并把引用 vendor 的部分替换为 `__webpack_require__()` 调用。如果应用程序 bundle 中没有 vendor 代码，
-那么你可以在 webpack 中实现被称为长效缓存的通用模式。
+*这是什么？* 从表面上，这告诉我们webpack从app.js和vendor.js开始创建依赖图。这些依赖图是彼此完全分离互相独立的。这种方式比较常见于，只有一个入口起点(不包括verdor)的单页应用程序中。
+此设置允许你使用 CommonsChunkPlugin 从「应用程序 bundle」中提取 vendor 引用(vendor reference) 到 vendor bundle，并把引用 vendor 的部分替换为 `__webpack_require__()` 调用。如果应用程序 bundle 中没有 vendor 代码，那么你可以在 webpack 中实现被称为长效缓存的通用模式。
+
 **多页面应用程序**
 `webpack.config.js`
 ```js
@@ -154,9 +144,8 @@ const config = {
 	}
 }
 ```
-在多页应用中，（每当页面跳转时）服务器将为你获取一个新的 HTML 文档。页面重新加载新文档，并且资源被重新下载。
-然而，这给了我们特殊的机会去做很多事：使用CommonsChunkPlugin为每个页面间的应用程序共享代码创建bundle。
-由于入口起点增多，多页应用能够复用入口起点之间的大量代码/模块，从而可以极大地从这些技术中受益。
+在多页应用中，（每当页面跳转时）服务器将为你获取一个新的 HTML 文档。页面重新加载新文档，并且资源被重新下载。然而，这给了我们特殊的机会去做很多事：使用CommonsChunkPlugin为每个页面间的应用程序共享代码创建bundle。由于入口起点增多，多页应用能够复用入口起点之间的大量代码/模块，从而可以极大地从这些技术中受益。
+
 ### 输出output
 配置output选项可以控制webpack如何向硬盘写入编译文件。注意，即使可以存在多个入口起点，但只指定一个输出配置。
 ##### 用法usage
@@ -350,5 +339,69 @@ const config = {
 
 moudle.exports = config;
 ```
-##### 配置configuration
+### 配置configuration
 应该注意到，很少有webpack配置看起来完全相同。这是因为webpack的配置文件，是导出一个对象的JavaScript文件。此对象，由webpack根据对象定义的属性进行解析；
+因为webpack配置是标准的node.jsCommon JS模块，所以可以这样：
+* 通过`require(...)`导入其他文件
+* 通过`require(...)`使用npm的工具函数
+* 使用JavaScript控制流表达式，例如`?:`操作符
+* 对常用值使用常量或变量
+* 编写并执行函数来生成部分配置
+
+基本配置
+```js
+var path = require('path');
+
+module.exports = {
+  mode: 'development',
+  entry: './foo.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'foo.bundle.js'
+  }
+};
+```
+多个Target
+作为导出一个配置对象/配置函数的替代，可能需要导出多个配置对象。当运行webpack时，所有配置对象都会构建。
+```js
+module.exports = [{
+  output: {
+    filename: './dist-amd.js',
+    libraryTarget: 'amd'
+  },
+  entry: './app.js',
+  mode: 'production',
+}, {
+  output: {
+    filename: './dist-commonjs.js',
+    libraryTarget: 'commonjs'
+  },
+  entry: './app.js',
+  mode: 'production',
+}]
+```
+### 模块modules
+在模块化编程中，开发者将程序分解成离散功能块，并称之为模块。
+每个模块具有比完整程序更小的接触面，使得校验、调试、测试轻而易举。
+webpack通过loader可以支持各种语言和预处理器编写模块。loader描述了webpack如何处理费JavaScript模块，并且在bundle中引入这些依赖。
+### 模块解析module resolution
+resolver是一个库，用于找到模块的绝对路径。一个模块可以作为另一个模块的依赖模块，然后被后者引用，所依赖的模块可以是来自应用程序代码或第三方的库。resolver帮助webpack找到bundle中需要引入的模块代码，这些代码在包含在每个require/import语句中。当打包模块时，webpack使用enhanced-resolve来解析文件路径。
+##### webpack中的解析规则
+使用enhanced-resolve，webpack能够解析三种文件路径：绝对路径，相对路径，模块路径。
+##### 依赖图
+任何时候，一个文件依赖于另一个文件，webpack就把此视为文件之间有依赖关系。这使得webpack可以接受非代码资源(例如图像或web字体)，并且可以把它们作为依赖提供给你的应用程序。
+#### manifest
+在使用webpack构建的典型应用程序或站点中，有三种主要的代码类型：
+* 团队编写的源码
+* 源码会依赖的任何第三方的library或vendor代码
+* webpack的runtime和manifest，管理所有模块的交互。
+
+##### runtime
+runtime，以及伴随的manifest数据，主要是指：在浏览器运行时，webpack用来连接模块化的应用程序的所有代码。runtime包含：在模块交互时，连接模块所需的加载和解析逻辑。包括浏览器中的已加载模块的连接，以及懒加载模块的执行逻辑。
+##### manifest
+当编译器compiler开始执行解析和映射应用程序是，它会保留所有模块的详细要点。这个数据集合称为manifest，当完成打包并发送到浏览器时，会在运行时，通过manifest来解析和加载模块。无论选择哪种模块语法。那些import或require语句现在都已转换为__webpack_require__方法，此方法指向模块标识符。通过使用manifest中的数据，runtime将能够查询模块标识符，检索出背后对应的模块。
+##### 模块热替换 hot module replacement
+模块热替换HMR功能会在应用程序运行中替换、添加或删除模块，而无需重新加载整个页面，主要是通过以下几种方式，来显著加快开发速度。
+* 保留在完全重新加载页面时丢失的应用程序状态。
+* 只更新变更内容，以节省宝贵的开发时间。
+* 调整样式更加快速，几乎相当于在浏览器调试器中更改样式
