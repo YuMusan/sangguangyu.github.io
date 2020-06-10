@@ -215,11 +215,11 @@ to:object
 重定向到的location，pathname可以使任何path-to-regexp能够理解的有效的URL路径
 ```js
 <Redirect
-  to={{
+  to={
     pathname: "/login",
     search: "?utm=your+face",
     state: { referrer: currentLocation }
-  }}
+  }
 />
 ```
 state对象可以通过重定向到组件中的this.props.locations.state来访问。这个新的referrer键将通过路径名为`/login`指向Login组件中的this.props.locations.state.referrer来访问
