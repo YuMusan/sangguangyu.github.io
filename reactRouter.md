@@ -127,12 +127,7 @@ to:object
 * hash：放入网址的hash，例如#a-hash
 * state：状态持续到location
 ```js
-<Link to={{
-  pathname: '/courses',
-  search: '?sort=name',
-  hash: '#the-hash',
-  state: { fromDashboard: true }
-}}/>
+<Link to={pathname: '/courses',search: '?sort=name',hash: '#the-hash',state: { fromDashboard: true }} />
 ```
 replace:bool
 如果为true，则单击链接将替换历史堆栈中的当前入口而不是添加新入口
