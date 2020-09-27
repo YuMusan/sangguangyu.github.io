@@ -1,5 +1,5 @@
 # webpack
-### 概念
+## 概念
 本质上，webpack是一个现代JavaScript应用程序的静态模块打包器(module bundler)。当webpack处理应用程序时，它会递归的构建一个依赖关系图(dependency graph),其中包含应用程序需要的每个模块，然后将所有这些模块打包成一个或多个bundle。
 理解四个核心概念：
 * 人口entry
@@ -7,9 +7,10 @@
 * loader
 * 插件plugins
 
-### 入口entry
+## 入口entry
 入口起点entry point指示webpack应该使用哪个模块，来作为构建其内部依赖图的开始。进入入口起点后,webpack会找出有哪些模块和库是入口起点依赖的(直接的和间接的)
 每个依赖项随机被处理，最后输出到称之为bundles的文件中。通过在webpack配置中配置entry属性，来指定一个入口起点(或多个入口起点)。默认值为`./src`
+
 `webpack.config.js`
 ```js
 //entry配置的最简单例子
@@ -83,8 +84,10 @@ module.exports = config;
 通过选择development或production之中的一个，来设置mode参数，可以启用相应模式下的webpack内置的优化。
 `module.exports = {mode: 'production'};
 `
-### 入口起点[entry points]
-##### 单个入口语法
+
+## 入口起点[entry points]
+
+### 单个入口语法
 用法`entry: string|Array<string>`
 `webpack.config.js`
 ```js
@@ -103,7 +106,7 @@ const config = {
 ```
 >向entry传入一个数组时会发生什么？向entry属性传入[文件路径数组]将创建'多个主入口'。如果想要多个依赖文件一起注入，并且将他们的依赖graph导向到一个chunk时，传入数组的方式就很有用。
 
-##### 对象语法
+### 对象语法
 用法：`entry:{[entryChunkName: string]: string|Arry<string>}`
 `webpack.config.js`
 ```js
@@ -118,7 +121,7 @@ module.exports = config;
 ```
 >可扩展webpack配置是指，可重用并且可以与其他配置组合使用。这用于将关注点concern从环境environment、构建目标build target、运行时runtime中分离。然后用专门的工具webpack-merge将它们合并。
 
-##### 常见场景
+### 常见场景
 **分离应用程序APP和第三方库vendor入口**
 ```js
 const config = {
@@ -146,9 +149,11 @@ const config = {
 ```
 在多页应用中，（每当页面跳转时）服务器将为你获取一个新的 HTML 文档。页面重新加载新文档，并且资源被重新下载。然而，这给了我们特殊的机会去做很多事：使用CommonsChunkPlugin为每个页面间的应用程序共享代码创建bundle。由于入口起点增多，多页应用能够复用入口起点之间的大量代码/模块，从而可以极大地从这些技术中受益。
 
-### 输出output
+## 输出output
+
 配置output选项可以控制webpack如何向硬盘写入编译文件。注意，即使可以存在多个入口起点，但只指定一个输出配置。
-##### 用法usage
+
+### 用法usage
 在webpack中配置output属性的最低要求是，将它的值设置为一个对象，包括以下两点：
 * filename用于输出文件的文件名
 * 目标输出目录path的绝对路径
@@ -163,7 +168,9 @@ const config = {
 ```
 
 此配置将一个单独的bundle.js文件输出到`/home/proj/public/assets`目录中。
-##### 多个入口起点
+
+### 多个入口起点
+
 如果配置创建了多个单独的chunk(例如,使用多个入口起点或使用像commonsChunPlugin这样的插件),则应该使用占位符substitutions来确保每个文件具有唯一的名称。
 ```js
 {
@@ -178,7 +185,7 @@ const config = {
 }
 // 写入到硬盘：./dist/app.js, ./dist/search.js
 ````
-##### 高级进阶
+### 高级进阶
 以下是使用CDN和资源hash的复杂示例：
 ```js
 output: {
@@ -192,7 +199,7 @@ __webpack_public_path__ = myRuntimePublicPath
 
 // 剩余的应用程序入口
 ```
-##### 模式mode
+## 模式mode
 提供mode配置选项，告知webpack使用相应模式的内置优化。	
 只在配置中提供mode选项：
 `module.exports = {
@@ -226,9 +233,9 @@ module.exports = {
 -  ]
 }
 ```
-### loader
+## loader
 loader用于对模块的源代码进行转换。loader可以让你在import或加载模块时预处理文件。因此loader类似于其他构建工具中'任务'，并提供了处理前端构建步骤的强大方法。loader可以将文件从不同的语言(如Typescript)转换为JavaScript，或将内联图像转换为data URL。loader甚至允许直接在JavaScript模块中import CSS文件！
-##### 示例
+### 示例
 例如，使用loader告诉webpack加载css文件，或者将typescript转为JavaScript。首先安装相对应的loader。
 
     npm install --save-dev css-loader
@@ -245,12 +252,14 @@ module.exports = {
   }
 };
 ```
-##### 使用loader
+### 使用loader
 在应用程序中，有三种使用loader的方式。
 * 配置：在webpack.config.js文件中指定loader。
 * 内联：在每个import语句中显式指定loader。
 * CLI ：在shell命令中指定它们。
-##### 配置configuration
+
+## 配置configuration
+
 `moudle.rules`允许在webpack配置中指定多个loader。这是展示loader的一种简明方式，并且有助于使代码变得简洁。同事对各个loader有个全局概览：
 ```js
 module: {
@@ -271,17 +280,17 @@ module: {
   }
 ```
 
-##### 内联
+### 内联
 可以在import语句或任何等效于import的方式中指定loader。使用!将资源中的loader分开。分开的每个部分都相对于当前目录解析。
 `import Styles from 'style-loader!css-loader?modules!./styles.css';`
 通过前置所有规则及使用!，可以对应覆盖到配置中的任意loader。
 选项可以传递查询参数，例如`?key=value&foo=bar`,或者一个JSON对象，例如`?{"key":"value","foo":"bar"}`
 
-##### CLI
+### CLI
 也可以通过CLI使用loader：`webpack --module-bind jade-loader --module-bind 'css=style-loader!css-loader'`
 这会对 .jade 文件使用 jade-loader，对 .css 文件使用 style-loader 和 css-loader。
 
-##### loader特性
+### loader特性
 * loader支持链式传递，能够对资源使用流水线(pipeline).一组链式的loader将按照相反的顺序执行。loader链中的第一个loader返回值给下一个loader。在最后一个loader，返回webpack所预期的JavaScript。
 * loader可以是同步的，也可以是异步的。
 * loader运行在node.js中，并且能够执行任何可能的操作。
@@ -292,12 +301,15 @@ module: {
 * loader能够产生额外的任意文件。
 
 loader通过预处理函数，为JavaScript生态系统提供更多能力。可以更加灵活地引入细粒度逻辑，例如压缩、打包、语言翻译和其他。
-##### 解析loader
+### 解析loader
 loader遵循标准的模块解析。多数情况下，loader将从模块路径(通常将模块路径认为是npm install,node_modules)解析。
 loader模块需要导出为一个函数，并且使用node.js兼容的JavaScript缩写。通常使用npm进行管理，但是也可以将自定义loader作为应用程序中的文件。按照约定，loader通常被命名为`xxx-loader`(例如json-loader)
-### 插件plugins
+
+## 插件plugins
+
 插件是webpack的支柱功能。webpack自身也是构建与，在webpack配置中用到的相同的插件系统之上，插件的目的在于解决loader无法实现的其他事。
-##### 剖析
+
+### 剖析
 webpack插件是一个具有apply属性的JavaScript对象。apply属性会被webpack compiler调用，并且compiler对象可在整个编译生命周期访问。
 ```js
 const pluginName = 'ConsoleLogOnBuildWebpackPlugin';
@@ -310,7 +322,8 @@ class ConsoleLogOnBuildWebpackPlugin {
 }
 ```
 compiler hook的tap方法的第一个参数，应该是驼峰式命名的插件名称。建议为此使用一个常量，以便它可以在所有hook中复用。
-##### 配置
+
+### 配置插件
 `webpack.config.js`
 ```js
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -339,7 +352,9 @@ const config = {
 
 moudle.exports = config;
 ```
-### 配置configuration
+
+## 配置configuration
+
 应该注意到，很少有webpack配置看起来完全相同。这是因为webpack的配置文件，是导出一个对象的JavaScript文件。此对象，由webpack根据对象定义的属性进行解析；
 因为webpack配置是标准的node.jsCommon JS模块，所以可以这样：
 * 通过`require(...)`导入其他文件
@@ -380,28 +395,45 @@ module.exports = [{
   mode: 'production',
 }]
 ```
-### 模块modules
+## 模块modules
+
 在模块化编程中，开发者将程序分解成离散功能块，并称之为模块。
 每个模块具有比完整程序更小的接触面，使得校验、调试、测试轻而易举。
 webpack通过loader可以支持各种语言和预处理器编写模块。loader描述了webpack如何处理费JavaScript模块，并且在bundle中引入这些依赖。
+
 ### 模块解析module resolution
+
 resolver是一个库，用于找到模块的绝对路径。一个模块可以作为另一个模块的依赖模块，然后被后者引用，所依赖的模块可以是来自应用程序代码或第三方的库。resolver帮助webpack找到bundle中需要引入的模块代码，这些代码在包含在每个require/import语句中。当打包模块时，webpack使用enhanced-resolve来解析文件路径。
-##### webpack中的解析规则
+
+### webpack中的解析规则
 使用enhanced-resolve，webpack能够解析三种文件路径：绝对路径，相对路径，模块路径。
-##### 依赖图
+
+### 依赖图
+
 任何时候，一个文件依赖于另一个文件，webpack就把此视为文件之间有依赖关系。这使得webpack可以接受非代码资源(例如图像或web字体)，并且可以把它们作为依赖提供给你的应用程序。
-#### manifest
+
+### manifest
+
 在使用webpack构建的典型应用程序或站点中，有三种主要的代码类型：
 * 团队编写的源码
 * 源码会依赖的任何第三方的library或vendor代码
 * webpack的runtime和manifest，管理所有模块的交互。
 
-##### runtime
+### runtime
 runtime，以及伴随的manifest数据，主要是指：在浏览器运行时，webpack用来连接模块化的应用程序的所有代码。runtime包含：在模块交互时，连接模块所需的加载和解析逻辑。包括浏览器中的已加载模块的连接，以及懒加载模块的执行逻辑。
-##### manifest
+
+### manifest
+
 当编译器compiler开始执行解析和映射应用程序是，它会保留所有模块的详细要点。这个数据集合称为manifest，当完成打包并发送到浏览器时，会在运行时，通过manifest来解析和加载模块。无论选择哪种模块语法。那些import或require语句现在都已转换为__webpack_require__方法，此方法指向模块标识符。通过使用manifest中的数据，runtime将能够查询模块标识符，检索出背后对应的模块。
-##### 模块热替换 hot module replacement
+
+### 模块热替换 hot module replacement
+
 模块热替换HMR功能会在应用程序运行中替换、添加或删除模块，而无需重新加载整个页面，主要是通过以下几种方式，来显著加快开发速度。
 * 保留在完全重新加载页面时丢失的应用程序状态。
 * 只更新变更内容，以节省宝贵的开发时间。
 * 调整样式更加快速，几乎相当于在浏览器调试器中更改样式
+
+
+
+
+
