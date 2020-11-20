@@ -616,3 +616,11 @@ def main():
 if __name__ == '__main__':
     main()
 ```
+```text
+https://github.com/trekhleb/javascript-algorithms/blob/master/README.zh-CN.md
+https://github.com/jackfrued/Python-100-Days
+https://github.com/kon9chunkit/GitHub-Chinese-Top-Charts#All-Language
+https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide
+https://www.webpackjs.com/guides/getting-started/
+https://cn.vuejs.org/v2/guide/index.html
+```
