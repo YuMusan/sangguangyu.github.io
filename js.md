@@ -150,7 +150,9 @@ fetch(myRequest).then(function(response) {
   myImage.src = objectURL;
 });
 ```
+
 Request()和fetch()接受同样的参数。甚至可以传入一个已存在的request对象来创造一个拷贝`const anotherRequest = new Request(myRequest,myInit)`。因为request和response bodies只能被使用一次(被设计成stream的方式，所以只能被读取一次)。创建一个拷贝就可以再次使用request/response,也可以使用不同的init参数
+
 ------
 ## Headers
 使用Headers的接口，可以通过Headers()构造函数来创建一个自己的headers对象
