@@ -675,3 +675,127 @@ console.log(instance.msg);
 // 预期输出值: "hello cake"
 ```
 
+# promise
+
+一个promise对象代表一个在promise被创建出时不一定的状态值，它把异步操作最终的成功返回值或者失败原因和相应的处理程序关联起来。使得异步方法可以像同步方法一样返回值：异步方法不会立即返回最终的值，而是会返回一个promise，以便在未来某时把值交给使用者。
+一个promise必然处于以下几种状态之一：
+
+* 待定pending：初始状态，既没有被兑现，也没有被拒绝
+* 已兑现fulfilled：意味着操作成功完成
+* 已拒绝rejected：意味着操作失败
+
+待定状态的promise对象要么会通过一个值被兑现，要么会通过一个原因(错误)被拒绝rejected。当情况发生时，promise的then方法排列的相关处理程序就会被调用。如果promise在相应的处理程序被绑定时就已经被兑现或被拒绝，那么这个处理程序就会被调用，因此在完成异步操作和绑定处理方法之间不会存在竞争状态。
+
+![promise](https://mdn.mozillademos.org/files/8633/promises.png)
+
+## promise的链式调用
+
+可以用`promise.then(),promise.catch(),promise.finally()`这些方法将进一步的操作与一个变为已敲定状态的promise关联起来。这些方法还会返回一个新生成的promise对象，这个对象可以被非强制性的用来做链式调用。
+
+```js
+const myPromise =
+  (new Promise(myExecutorFunc))
+  .then(handleFulfilledA)
+  .then(handleFulfilledB)
+  .then(handleFulfilledC)
+  .catch(handleRejectedAny);
+```
+
+一个已经处于已敲定settled状态的promise中的操作只有promise链式调用的栈被清空了和一个时间循环过去了之后才会被执行。
+
+## promise构造器
+
+通过new关键字和promise构造器创建它的对象。构造器接受一个名为executor function的函数，此函数接受两个函数参数。当异步任务成功时，第一个函数resolve将被调用，并返回一个值代表成功，当失败时，第二个函数reject将被调用，并返回失败原因(失败原因通常是一个error对象)。
+
+```js
+const myPromise = new Promise((resolve, reject) => {
+  // do something asynchronous which eventually calls either:
+  //
+  //   resolve(someValue)        // fulfilled
+  // or
+  //   reject("failure reason")  // rejected
+});
+
+// 提供拥有promise功能的函数，简单返回一个promise即可：
+
+function myAsyncFunction(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest() 
+    xhr.open("GET", url) 
+    xhr.onload = () => resolve(xhr.responseText) 
+    xhr.onerror = () => reject(xhr.statusText) 
+    xhr.send() 
+  });
+}
+```
+
+```js
+
+  function imgLoad(url) {
+    // Create new promise with the Promise() constructor;
+    // This has as its argument a function
+    // with two parameters, resolve and reject
+    return new Promise(function(resolve, reject) {
+      // Standard XHR to load an image
+      var request = new XMLHttpRequest();
+      request.open('GET', url);
+      request.responseType = 'blob';
+      // When the request loads, check whether it was successful
+      request.onload = function() {
+        if (request.status === 200) {
+        // If successful, resolve the promise by passing back the request response
+          resolve(request.response);
+        } else {
+        // If it fails, reject the promise with a error message
+          reject(Error('Image didn\'t load successfully; error code:' + request.statusText));
+        }
+      };
+      request.onerror = function() {
+      // Also deal with the case when the entire request fails to begin with
+      // This is probably a network error, so reject the promise with an appropriate message
+          reject(Error('There was a network error.'));
+      };
+      // Send the request
+      request.send();
+    });
+  }
+  // Get a reference to the body element, and create a new image object
+  var body = document.querySelector('body');
+  var myImage = new Image();
+  // Call the function with the URL we want to load, but then chain the
+  // promise then() method on to the end of it. This contains two callbacks
+  imgLoad('myLittleVader.jpg').then(function(response) {
+    // The first runs when the promise resolves, with the request.response
+    // specified within the resolve() method.
+    var imageURL = window.URL.createObjectURL(response);
+    myImage.src = imageURL;
+    body.appendChild(myImage);
+    // The second runs when the promise
+    // is rejected, and logs the Error specified with the reject() method.
+  }, function(Error) {
+    console.log(Error);
+  });
+  
+```
+
+### 静态方法
+`Promise.all(iterable)`
+这个方法返回一个新的promise对象，这个promise对象在iterable参数对象里所有的promise对象都成功的时候才会触发成功，一旦有任何一个iterable里的promise对象失败则立即触发该promise对象的失败。这个新的promise对象在触发成功状态后，会把一个包含iterable里所有promise返回值的数组作为成功回调的返回值，顺序跟iterable的顺序保持一致，如果这个新的promise对象出发了失败状态，它会把iterable里的第一个触发失败的promise对象的错误信息作为它的失败错误信息。
+
+`Promise.reject(reason)`
+返回一个状态为失败的Promise对象，并将给定的失败信息传递给对应的处理方法
+
+`Promise.resolve(value)`
+返回一个状态由给定value决定的Promise对象。
+
+尚在草案实验阶段的方法：
+
+* `Promise.allSettled(iterable)`：等到所有promises都已敲定（settled）（每个promise都已兑现（fulfilled）或已拒绝（rejected））。返回一个promise，该promise在所有promise完成后完成。并带有一个对象数组，每个对象对应每个promise的结果。
+
+* `Promise.any(iterable)`：接收一个Promise对象的集合，当其中的一个 promise 成功，就返回那个成功的promise的值。
+
+* `Promise.race(iteralbe)`：当iterable参数里的任意一个子promise被成功或失败后，父promise马上也会用子promise的成功返回值或失败详情作为参数调用父promise绑定的相应句柄，并返回该promise对象。
+
+## 元编程
+
+从ECMAScript 2015 开始，JavaScript 获得了 Proxy 和 Reflect 对象的支持，允许拦截并定义基本语言操作的自定义行为（例如，属性查找，赋值，枚举，函数调用等）。借助这两个对象，可以在 JavaScript 元级别进行编程。
