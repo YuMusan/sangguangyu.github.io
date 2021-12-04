@@ -4,52 +4,55 @@ fetch规范与jQuery.ajax()主要有两种方式的不同：
 * 当接受到一个代表错误的HTTP状态码时，从fetch()返回的promise不会被标记为reject，及时该HTTP响应的状态码是404或500.相反，它会将promise状态标记为resolve(会将resolve的返回值的ok属性设置为false)，仅当网络故障时，或请求被阻止时，才会标记为reject。
 * 默认情况下，fetch不会从服务端发送或接受任何cookies，如果站点依赖于用户session，则会导致卫竟然证的请求(要发送cookies，必须设置credentials选项)
 -----
-#### 进行fetch请求
+### 进行fetch请求
+
 一个基本的fetch请求设置起来很简单。
 ```js
 fetch('http://example.com/movies.json')
-.then(function(response){
-    return response.json();
-}).then(function(myJson){
-    console.log(myJson);
-})
+  .then(response => response.json())
+  .then(data => console.log(data));
 ```
-这里通过网络获取一个JSON文件并将其打印到控制台。最简单的用法是只提供一个参数用来指明需要fetch()到的资源路径，然后返回一个包含响应结果的promise(一个Response对象)
-#### 支持的请求参数
+
+### 支持的请求参数
+
 fetch()接受第二个可选参数，一个可以控制不同配置的init对象：
+
 ```js
 // Example POST method implementation:
-
-postData('http://example.com/answer', {answer: 42})
-  .then(data => console.log(data)) // JSON from `response.json()` call
-  .catch(error => console.error(error))
-
-function postData(url, data) {
+async function postData(url = '', data = {}) {
   // Default options are marked with *
-  return fetch(url, {
-    body: JSON.stringify(data), // must match 'Content-Type' header
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, same-origin, *omit
-    headers: {
-      'user-agent': 'Mozilla/4.0 MDN Example',
-      'content-type': 'application/json'
-    },
+  const response = await fetch(url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, cors, *same-origin
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
     redirect: 'follow', // manual, *follow, error
-    referrer: 'no-referrer', // *client, no-referrer
-  })
-  .then(response => response.json()) // parses response to JSON
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data) // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
 }
+
+postData('https://example.com/answer', { answer: 42 })
+  .then(data => {
+    console.log(data); // JSON data parsed by `data.json()` call
+  });
 ```
-#### 发送带凭据的请求
-为了让浏览器发送包含凭据的请求(即便是跨域源)，要将`credentials:'include'`添加到传递给fetch方法的init对象
+
+### 发送带凭据的请求
+
+将`credentials:'include'`传递给fetch方法的init对象，浏览器就可以发送包含凭据的请求(即便是跨域源)，
 ```js
 fetch('https://example.com', {
   credentials: 'include'  
 })
 ```
-如果只想在请求URL与调用脚本同一起源处时发送凭据，添加`credentials:'same-origin'`
+
+请求URL与调用脚本同一起源处时发送凭据，添加`credentials:'same-origin'`
 ```js
 // The calling script is on the origin 'https://example.com'
 
@@ -57,33 +60,41 @@ fetch('https://example.com', {
   credentials: 'same-origin'  
 })
 ```
-如果在请求中不包含凭据，使用`credentials:'omit'`
+
+请求中不包含凭据，使用`credentials:'omit'`
 ```js
 fetch('https://example.com', {
   credentials: 'omit'  
 })
 ```
-#### 上传JSON数据
+### 上传JSON数据
+
 使用fetch POST JSON数据
 ```js
-var url = 'https://example.com/profile';
-var data = {username: 'example'};
+const data = { username: 'example' };
 
-fetch(url, {
+fetch('https://example.com/profile', {
   method: 'POST', // or 'PUT'
-  body: JSON.stringify(data), // data can be `string` or {object}!
-  headers: new Headers({
-    'Content-Type': 'application/json'
-  })
-}).then(res => res.json())
-.catch(error => console.error('Error:', error))
-.then(response => console.log('Success:', response));
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(data),
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Success:', data);
+})
+.catch((error) => {
+  console.error('Error:', error);
+});
 ```
-#### 上传文件
+### 上传文件
+
 可以通过`HTML<input type="file" />`元素，FormData()和fetch()上传文件
+
 ```js
-var formData = new FormData();
-var fileField = document.querySelector("input[type='file']");
+const formData = new FormData();
+const fileField = document.querySelector('input[type="file"]');
 
 formData.append('username', 'abc123');
 formData.append('avatar', fileField.files[0]);
@@ -93,30 +104,37 @@ fetch('https://example.com/profile/avatar', {
   body: formData
 })
 .then(response => response.json())
-.catch(error => console.error('Error:', error))
-.then(response => console.log('Success:', response));
+.then(result => {
+  console.log('Success:', result);
+})
+.catch(error => {
+  console.error('Error:', error);
+});
 ```
-#### 上传多个文件
+### 上传多个文件
 可以通过`HTML<input type="file" mutiple/>`元素，FormData()和fetch()上传文件
 ```js
-var formData = new FormData();
-var photos = document.querySelector("input[type='file'][multiple]");
+const formData = new FormData();
+const photos = document.querySelector('input[type="file"][multiple]');
 
 formData.append('title', 'My Vegas Vacation');
-// formData 只接受文件、Blob 或字符串，不能直接传数组，所以必须循环嵌入
-for (let i = 0; i < photos.files.length; i++) { 
-    formData.append('photo', photos.files[i]); 
+for (let i = 0; i < photos.files.length; i++) {
+  formData.append(`photos_${i}`, photos.files[i]);
 }
 
 fetch('https://example.com/posts', {
   method: 'POST',
-  body: formData
+  body: formData,
 })
 .then(response => response.json())
-.then(response => console.log('Success:', JSON.stringify(response)))
-.catch(error => console.error('Error:', error));
+.then(result => {
+  console.log('Success:', result);
+})
+.catch(error => {
+  console.error('Error:', error);
+});
 ```
-#### 检测请求是否成功
+### 检测请求是否成功
 如果遇到网络故障，fetch()promise将会reject，带上一个TypeError对象，虽然这个情况经常是遇到权限问题或类似问题，比如404不是一个网络故障。想要精确的判断fetch()是否成功，需要包含promise resolved的情况，此时再判断Response.ok是不是为true。
 ```js
 fetch('flowers.jpg').then(function(response) {
@@ -131,39 +149,46 @@ fetch('flowers.jpg').then(function(response) {
   console.log('There has been a problem with your fetch operation: ', error.message);
 });
 ```
-#### 自定义请求对象
-除了传给fetch()一个资源的地址，还可以通过Reqyest()构造函数来创建一个request对象看，然后再作为参数传给fetch():
+### 自定义请求对象
+除了传给fetch()一个资源的地址，还可以通过Request()构造函数来创建一个request对象，然后再作为参数传给fetch():
 ```js
-var myHeaders = new Headers();
+const myHeaders = new Headers();
 
-var myInit = { method: 'GET',
-               headers: myHeaders,
-               mode: 'cors',
-               cache: 'default' };
-
-var myRequest = new Request('flowers.jpg', myInit);
-
-fetch(myRequest).then(function(response) {
-  return response.blob();
-}).then(function(myBlob) {
-  var objectURL = URL.createObjectURL(myBlob);
-  myImage.src = objectURL;
+const myRequest = new Request('flowers.jpg', {
+  method: 'GET',
+  headers: myHeaders,
+  mode: 'cors',
+  cache: 'default',
 });
+
+fetch(myRequest)
+  .then(response => response.blob())
+  .then(myBlob => {
+    myImage.src = URL.createObjectURL(myBlob);
+  });
 ```
 
-Request()和fetch()接受同样的参数。甚至可以传入一个已存在的request对象来创造一个拷贝`const anotherRequest = new Request(myRequest,myInit)`。因为request和response bodies只能被使用一次(被设计成stream的方式，所以只能被读取一次)。创建一个拷贝就可以再次使用request/response,也可以使用不同的init参数
+Request()和fetch()接受同样的参数。甚至可以传入一个已存在的request对象来创造一个拷贝
+
+    const anotherRequest = new Request(myRequest,myInit)。
+
+因为request和response bodies只能被使用一次(被设计成stream的方式，所以只能被读取一次)。创建一个拷贝就可以再次使用request/response,也可以使用不同的init参数,创建拷贝必须在读取 body 之前进行，而且读取拷贝的 body 也会将原始请求的 body 标记为已读
 
 ------
-## Headers
+
+### Headers
 使用Headers的接口，可以通过Headers()构造函数来创建一个自己的headers对象
+
 ```js
-var content = "Hello World";
-var myHeaders = new Headers();
-myHeaders.append("Content-Type", "text/plain");
-myHeaders.append("Content-Length", content.length.toString());
-myHeaders.append("X-Custom-Header", "ProcessThisImmediately");
+const content = 'Hello World';
+const myHeaders = new Headers();
+myHeaders.append('Content-Type', 'text/plain');
+myHeaders.append('Content-Length', content.length.toString());
+myHeaders.append('X-Custom-Header', 'ProcessThisImmediately');
 ```
+
 也可以传一个多维数组或者对象字面量：
+
 ```js
 myHeaders = new Headers({
   "Content-Type": "text/plain",
@@ -171,7 +196,9 @@ myHeaders = new Headers({
   "X-Custom-Header": "ProcessThisImmediately",
 });
 ```
+
 headers中的内容也可以被获取
+
 ```js
 console.log(myHeaders.has("Content-Type")); // true
 console.log(myHeaders.has("Set-Cookie")); // false
@@ -186,56 +213,503 @@ console.log(myHeaders.getAll("X-Custom-Header")); // [ ]
 ```
 如果使用一个不合法的HTTP Header属性名，那么Headers的方法通常都会抛出TypeError异常。如果写入不可写的属性，也会抛出TypeError异常。除此之外，失败并不会抛出异常。
 ```js
-var myResponse = Response.error();
+const myResponse = Response.error();
 try {
-  myResponse.headers.set("Origin", "http://mybank.com");
-} catch(e) {
-  console.log("Cannot pretend to be a bank!");
+  myResponse.headers.set('Origin', 'http://mybank.com');
+} catch (e) {
+  console.log('Cannot pretend to be a bank!');
 }
 ```
+
 最佳实践是在使用之前检查content type是否正确。
+
 ```js
-fetch(myRequest).then(function(response) {
-  if(response.headers.get("content-type") === "application/json") {
-    return response.json().then(function(json) {
-      // process your JSON further
-    });
-  } else {
-    console.log("Oops, we haven't got JSON!");
-  }
+fetch(myRequest)
+  .then(response => {
+     const contentType = response.headers.get('content-type');
+     if (!contentType || !contentType.includes('application/json')) {
+       throw new TypeError("Oops, we haven't got JSON!");
+     }
+     return response.json();
+  })
+  .then(data => {
+      /* process your data further */
+  })
+  .catch(error => console.error(error));
+```
+### Response对象
+
+Response实例是在fetch()处理完promises之后返回的。
+
+最常见的response属性有：
+
+* Response.status----整数(默认值是200)，是response的状态码
+
+* Response.statusText----字符串(默认值为OK)，该值与HTTP状态码消息对应
+
+* Response.ok----该属性是来检查response的状态是否在200-299(包括200,299)这个范围内，该属性返回一个Boolean值。
+
+它的实例也可用通过 JavaScript 来创建，但只有在 ServiceWorkers 中使用 respondWith() 方法并提供了一个自定义的 response 来接受 request 时才真正有用:
+
+```js
+const myBody = new Blob();
+
+addEventListener('fetch', event => {
+  // ServiceWorker intercepting a fetch
+  event.respondWith(
+    new Response(myBody, {
+      headers: { 'Content-Type': 'text/plain' }
+    })
+  );
 });
 ```
-## Response对象
-Response实例是在fetch()处理完promises之后返回的。
-最常见的response属性有：
-* Response.status----整数(默认值是200)，是response的状态码
-* Response.statusText----字符串(默认值为OK)，该值与HTTP状态码消息对应
-* Response.ok----该属性是来检查response的状态是否在200-299(包括200,299)这个范围内，该属性返回一个Boolean值。
-## Body
-不管是请求还是响应都能够包含body对象，body也可以是以下任意类型的实例。
+Response() 构造方法接受两个可选参数—— response 的 body 和一个初始化对象（与Request() 所接受的 init 参数类似）
+
+### Body
+
+不管是请求还是响应都能够包含body对象，body也可以是以下任意类型的实例:
+
 * ArrayBuffer、ArrayBufferView、Blob/File、string、URLSearchParams、FormData
+
 Body类定义了以下方法以获取body内容，这些方法都会返回一个被解析后Promise对象和数据。
+
 * arrayBuffer()、blob()、json()、text()、formData()
+
 这些方法让非文本化的数据使用起来更加简单。请求体可以由传入body参数来进行设置。
+
 ```js
-var form = new FormData(document.getElementById('login-form'));
-fetch("/login", {
-  method: "POST",
+const form = new FormData(document.getElementById('login-form'));
+fetch('/login', {
+  method: 'POST',
   body: form
-})
+});
 ```
 request和response都会试着自动设置Content-Type，如果没有设置Content-Type值，发送的请求也会自动设值。
->`fecth(input[,init])`
-input定义要获取的资源
-* 一个USVString字符串，包含要获取资源的URL，一个request对象
-init一个配置项对象，包括所有对请求的设置。可选的参数有：
-* method：请求使用的方式，如GET、POST
-* header：请求的头信息，形式为Headers的对象或包含ByteString值得对象字面量
 
-## 有待补充
+### Fetch基本概念
+
+Fetch 的核心在于对 HTTP 接口的抽象，包括 Request，Response，Headers，Body，以及用于初始化异步请求的 global fetch。
 
 ---
+## Web Workers API
 
+通过使用Web Workers，Web应用程序可以在独立于主线程的后台线程中，运行一个脚本操作。可以在独立线程中执行费时的处理任务，从而允许主线程（通常是UI线程）不会因此被阻塞/放慢。
+
+一个worker是使用一个构造函数创建的一个对象(e.g. Worker()) 运行一个命名的JavaScript文件
+
+主线程和 worker 线程相互之间使用 postMessage() 方法来发送信息, 并且通过 onmessage 这个 event handler来接收信息（传递的信息包含在 Message 这个事件的data属性内) 。数据的交互方式为传递副本，而不是直接共享数据。
+
+在worker内，不能直接操作DOM节点，也不能使用window对象的默认方法和属性。
+
+除了专用 worker 之外，还有一些其他种类的 worker ：
+
+* Shared Workers 可被不同的窗体的多个脚本运行，例如IFrames等，只要这些workers处于同一主域。
+* Service Workers 一般作为web应用程序、浏览器和网络之间的代理服务。旨在创建有效的离线体验，拦截网络请求，以及根据网络是否可用采取合适的行动，更新驻留在服务器上的资源
+* Chrome Workers 是一种仅适用于firefox的worker
+* 音频 Workers可以在网络worker上下文中直接完成脚本化音频处理.
+
+### 专用 Worker
+
+**生成专用worker**
+
+调用Worker() 构造器，指定一个脚本的URL来执行worker线程（main.js）
+
+    const myWorker = new Worker('woker.js')
+
+**消息的接收和发送**
+
+通过postMessage() 方法和onmessage事件处理函数触发workers的方法。
+
+```js
+one.onchange = function() {
+  myWorker.postMessage([one.value,other.value]);
+  console.log('Message posted to worker');
+}
+
+other.onchange = function() {
+  myWorker.postMessage([one.value,other.value]);
+  console.log('Message posted to worker');
+}
+```
+变量one和other代表2个`<input>`元素；它们当中任意一个的值发生改变时，myWorker.postMessage(one.value,other.value])会将这2个值组成数组发送给worker。
+
+在worker中接收到消息后，可以写这样一个事件处理函数代码作为响应（worker.js）
+
+```js
+onmessage = function(e) {
+  console.log('Message received from main script');
+  const workerResult = 'Result: ' + (e.data[0] * e.data[1]);
+  console.log('Posting message back to main script');
+  postMessage(workerResult);
+}
+```
+
+onmessage处理函数允许一旦接收到消息就可以执行一些代码，代码中消息本身作为事件的data属性进行使用。
+
+回到主线程，再次使用onmessage以响应worker回传的消息：
+
+```js
+myWorker.onmessage = function(e) {
+  result.textContent = e.data;
+  console.log('Message received from worker');
+}
+```
+获取消息事件的data，并且将它设置为result的textContent，然后就可以看到运算的结果。
+
+```js
+// main.js
+if (window.Worker) {
+  const myWorker = new Worker("worker.js");
+
+  one.onchange = function() {
+    myWorker.postMessage([one.value, other.value]);
+    console.log('Message posted to worker');
+  }
+
+  other.onchange = function() {
+    myWorker.postMessage([one.value, other.value]);
+    console.log('Message posted to worker');
+  }
+
+  myWorker.onmessage = function(e) {
+    result.textContent = e.data;
+    console.log('Message received from worker');
+  }
+} else {
+  console.log('Your browser doesn\'t support web workers.');
+}
+```
+
+```js
+// worker.js
+onmessage = function(e) {
+  console.log('Worker: Message received from main script');
+  const result = e.data[0] * e.data[1];
+  if (isNaN(result)) {
+    postMessage('Please write two numbers');
+  } else {
+    const workerResult = 'Result: ' + result;
+    console.log('Worker: Posting message back to main script');
+    postMessage(workerResult);
+  }
+```
+
+**终止worker**
+
+从主线程中立刻终止一个运行中的worker,调用worker的terminate 方法
+
+    worker.terminate();
+
+worker线程会被立即杀死，不会有任何机会让它完成自己的操作或清理工作。
+
+worker线程中，workers 也可以调用close()方法进行关闭
+
+## Service Worker API
+
+Service workers 本质上充当 Web 应用程序、浏览器与网络（可用时）之间的代理服务器。这个 API 旨在创建有效的离线体验，它会拦截网络请求并根据网络是否可用来采取适当的动作、更新来自服务器的的资源。它还提供入口以推送通知和访问后台同步 API。
+
+### 特性
+Service worker是一个注册在指定源和路径下的事件驱动worker。它采用JavaScript控制关联的页面或者网站，拦截并修改访问和资源请求，细粒度地缓存资源。
+
+Service worker运行在worker上下文，因此它不能访问DOM。相对于驱动应用的主JavaScript线程，它运行在其他线程中，所以不会造成阻塞。它设计为完全异步，同步API（如XHR和localStorage）不能在service worker中使用。
+
+出于安全考量，Service workers只能由HTTPS承载
+
+为了解决丢失网络连接,以及好的统筹机制对资源缓存和自定义的网络请求进行控制
+
+Service Worker 可以使应用先访问本地缓存资源，所以在离线状态时，在没有通过网络接收到更多的数据前，仍可以提供基本的功能
+
+
+>Firefox Nightly: 访问 about:config 并设置 dom.serviceWorkers.enabled 的值为 true; 重启浏览器
+>Chrome Canary: 访问 chrome://flags并开启experimental-web-platform-features; 重启浏览器 
+>Opera: 访问 opera://flags 并开启 ServiceWorker 的支持; 重启浏览器。 
+
+### 基本架构
+
+通常遵循以下基本步骤使用service workers
+
+1. service worker URL 通过 serviceWorkerContainer.register() 来获取和注册。
+
+2. 如果注册成功，service worker 就在 ServiceWorkerGlobalScope 环境中运行。这是一个特殊类型的 worker上下文运行环境，与主运行线程（执行脚本）相独立，同时也没有访问 DOM 的能力。
+
+3. service worker 现在可以处理事件了。
+
+4. 受 service worker 控制的页面打开后会尝试去安装 service worker。最先发送给 service worker 的事件是安装事件(事件中可以开始进行填充 IndexDB和缓存站点资源)
+
+5. 当 oninstall 事件的处理程序执行完毕后，可以认为service worker 安装完成。
+
+6. 当 service worker 安装完成后，会接收到一个激活事件(activate event)。 onactivate 主要用途是清理先前版本的 service worker 脚本中使用的资源。
+
+7. Service Worker 现在可以控制页面，仅在register()成功后的打开的页面。页面起始于有没有 service worker ，且在页面的接下来生命周期内维持这个状态。所以，页面重新加载以让 service worker 获得完全的控制。
+
+![](https://mdn.mozillademos.org/files/12636/sw-lifecycle.png)
+
+service worker 支持的事件：
+
+![](https://mdn.mozillademos.org/files/12632/sw-events.png)
+
+
+### Service workers demo
+
+这是一个简单的 Star wars Lego 图片库。采用了基于 promise 的函数从一个 JSON 对象来读取图片内容，在显示图片到页面上之前，采用 Ajax 来加载图片。页面非常简单，而且是静态的，但也注册、安装和激活了 service worker，当浏览器支持的时候，它将缓存所有依赖的文件，它可以在离线的时候访问
+
+![](https://mdn.mozillademos.org/files/8243/demo-screenshot.png)
+
+**注册worker**
+
+```js
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw-test/sw.js', { scope: '/sw-test/' }).then(function(reg) {
+    // registration worked
+    console.log('Registration succeeded. Scope is ' + reg.scope);
+  }).catch(function(error) {
+    // registration failed
+    console.log('Registration failed with ' + error);
+  });
+}
+```
+
+1. 外面的代码块做了一个特性检查，在注册之前确保 service worker 是支持的。
+
+2. 接着，使用 ServiceWorkerContainer.register() 函数来注册站点的 service worker，service worker 只是app 内的一个 JavaScript 文件
+
+3. scope 参数是选填的，可以被用来指定让 service worker 控制的内容的子目录。这个例子指定 '/sw-test/'，表示 app 的 origin 下的所有内容。留空的话，默认值也是这个。
+
+4. .then() 函数链式调用我们的 promise，当 promise resolve 时，里面的代码就会执行。
+
+5. 最后链一个 .catch() 函数，当 promise rejected 才会执行。
+
+
+![](https://mdn.mozillademos.org/files/12630/important-notes.png)
+
+**填充缓存**
+service worker 注册之后，浏览器会尝试为页面或站点安装并激活它
+install 事件会在注册完成之后触发。install 事件一般是被用来填充浏览器的离线缓存能力。使用了 Service Worker 的新的标志性的存储 API — cache — 一个 service worker 上的全局对象，它可以存储网络响应发来的资源，并且根据它们的请求来生成key。
+
+```js
+this.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open('v1').then(function(cache) {
+      return cache.addAll([
+        '/sw-test/',
+        '/sw-test/index.html',
+        '/sw-test/style.css',
+        '/sw-test/app.js',
+        '/sw-test/image-list.js',
+        '/sw-test/star-wars-logo.jpg',
+        '/sw-test/gallery/',
+        '/sw-test/gallery/bountyHunters.jpg',
+        '/sw-test/gallery/myLittleVader.jpg',
+        '/sw-test/gallery/snowTroopers.jpg'
+      ]);
+    })
+  );
+});
+```
+
+**自定义请求响应**
+
+站点资源缓存后需要告诉 service worker 让它用这些缓存内容来做点什么。
+
+![](https://mdn.mozillademos.org/files/12634/sw-fetch.png)
+
+每次任何被 service worker 控制的资源被请求到时，都会触发 fetch 事件，这些资源包括了指定的 scope 内的文档，和这些文档内引用的其他任何资源
+
+给 service worker 添加一个 fetch 的事件监听器，接着调用 event 上的 respondWith() 方法来劫持 HTTP 响应
+
+```js
+this.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request)
+  );
+});
+```
+caches.match(event.request) 允许对网络请求的资源和 cache 里可获取的资源进行匹配，查看是否缓存中有相应的资源。
+
+**处理失败的请求**
+service worker cache有匹配的资源时， caches.match(event.request) 是非常棒的。但是如果没有匹配资源呢？如果不提供任何错误处理，promise 就会 reject，同时也会出现一个网络错误。
+
+如果在缓存中找不到匹配项，fetch()发起对该资源的默认网络请求，从网络中获取新资源,并对获取到的新资源进行缓存
+
+```js
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((resp) => {
+      return resp || fetch(event.request).then((response) => {
+        let responseClone = response.clone();
+        caches.open('v1').then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      }).catch(() => {
+        return caches.match('./sw-test/gallery/myLittleVader.jpg');
+      })
+    });
+  );
+});
+```
+
+完整的例子:
+```js
+// sw.js
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open('v1').then(function(cache) {
+      return cache.addAll([
+        '/sw-test/',
+        '/sw-test/index.html',
+        '/sw-test/style.css',
+        '/sw-test/app.js',
+        '/sw-test/image-list.js',
+        '/sw-test/star-wars-logo.jpg',
+        '/sw-test/gallery/bountyHunters.jpg',
+        '/sw-test/gallery/myLittleVader.jpg',
+        '/sw-test/gallery/snowTroopers.jpg'
+      ]);
+    })
+  );
+});
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(caches.match(event.request).then(function(response) {
+    // caches.match() always resolves
+    // but in case of success response will have value
+    if (response !== undefined) {
+      return response;
+    } else {
+      return fetch(event.request).then(function (response) {
+        // response may be used only once
+        // we need to save clone to put one copy in cache
+        // and serve second one
+        let responseClone = response.clone();
+        
+        caches.open('v1').then(function (cache) {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      }).catch(function () {
+        return caches.match('/sw-test/gallery/myLittleVader.jpg');
+      });
+    }
+  }));
+});
+```
+
+```js
+// app.js
+// register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw-test/sw.js', { scope: '/sw-test/' }).then(function(reg) {
+
+    if(reg.installing) {
+      console.log('Service worker installing');
+    } else if(reg.waiting) {
+      console.log('Service worker installed');
+    } else if(reg.active) {
+      console.log('Service worker active');
+    }
+
+  }).catch(function(error) {
+    // registration failed
+    console.log('Registration failed with ' + error);
+  });
+}
+// function for loading each image via XHR
+
+function imgLoad(imgJSON) {
+  // return a promise for an image loading
+  return new Promise(function(resolve, reject) {
+    var request = new XMLHttpRequest();
+    request.open('GET', imgJSON.url);
+    request.responseType = 'blob';
+    request.onload = function() {
+      if (request.status == 200) {
+        var arrayResponse = [];
+        arrayResponse[0] = request.response;
+        arrayResponse[1] = imgJSON;
+        resolve(arrayResponse);
+      } else {
+        reject(Error('Image didn\'t load successfully; error code:' + request.statusText));
+      }
+    };
+
+    request.onerror = function() {
+      reject(Error('There was a network error.'));
+    };
+    // Send the request
+    request.send();
+  });
+}
+
+var imgSection = document.querySelector('section');
+
+window.onload = function() {
+  // load each set of image, alt text, name and caption
+  for(var i = 0; i<=Gallery.images.length-1; i++) {
+    imgLoad(Gallery.images[i]).then(function(arrayResponse) {
+
+      var myImage = document.createElement('img');
+      var myFigure = document.createElement('figure');
+      var myCaption = document.createElement('caption');
+      var imageURL = window.URL.createObjectURL(arrayResponse[0]);
+
+      myImage.src = imageURL;
+      myImage.setAttribute('alt', arrayResponse[1].alt);
+      myCaption.innerHTML = '<strong>' + arrayResponse[1].name + '</strong>: Taken by ' + arrayResponse[1].credit;
+
+      imgSection.appendChild(myFigure);
+      myFigure.appendChild(myImage);
+      myFigure.appendChild(myCaption);
+
+    }, function(Error) {
+      console.log(Error);
+    });
+  }
+};
+```
+```js
+// image-list.js
+var Path = 'gallery/';
+var Gallery = { 'images' : [  
+  {
+    'name'  : 'Darth Vader',
+    'alt' : 'A Black Clad warrior lego toy',
+    'url': 'gallery/myLittleVader.jpg',
+    'credit': '<a href="https://www.flickr.com/photos/legofenris/">legOfenris</a>, published under a <a href="https://creativecommons.org/licenses/by-nc-nd/2.0/">Attribution-NonCommercial-NoDerivs 2.0 Generic</a> license.'
+  },
+  {
+    'name'  : 'Snow Troopers',
+    'alt' : 'Two lego solders in white outfits walking across an icy plain',
+    'url': 'gallery/snowTroopers.jpg',
+    'credit': '<a href="https://www.flickr.com/photos/legofenris/">legOfenris</a>, published under a <a href="https://creativecommons.org/licenses/by-nc-nd/2.0/">Attribution-NonCommercial-NoDerivs 2.0 Generic</a> license.'
+  },
+  {
+    'name'  : 'Bounty Hunters',
+    'alt' : 'A group of bounty hunters meeting, aliens and humans in costumes.',
+    'url': 'gallery/bountyHunters.jpg',
+    'credit': '<a href="https://www.flickr.com/photos/legofenris/">legOfenris</a>, published under a <a href="https://creativecommons.org/licenses/by-nc-nd/2.0/">Attribution-NonCommercial-NoDerivs 2.0 Generic</a> license.'
+  },
+]};
+```
+
+**删除旧缓存**
+
+```js
+self.addEventListener('activate', function(event) {
+  const cacheWhitelist = ['v2'];
+  event.waitUntil(
+    caches.keys().then(function(keyList) {
+      return Promise.all(keyList.map(function(key) {
+        if (cacheWhitelist.indexOf(key) === -1){
+          return caches.delete(key);
+        }
+      }));
+    })
+  );
+});
+```
+activate事件
+----
 ## webSocket
 
 WebSocket 它可以在用户的浏览器和服务器之间打开交互式通信会话。可以向服务器发送消息并接收事件驱动的响应，而无需通过轮询服务器的方式以获得响应
@@ -389,11 +863,13 @@ socket.addEventListener("close", function(event) {
 
 使用server-sent 事件，服务器可以在任何时刻向Web 页面推送数据和信息。这些被推送进来的信息可以在这个页面上作为 Events + data 的形式来处理。
 
-如果发送事件的脚本不同源，应该创建一个新的包含URL和options参数的EventSource对象。
+### 从服务器接受事件
+
+创建一个新的包含URL和options参数的EventSource对象。
 
     const evtSource = new EventSource("//api.example.com/ssedemo.php", { withCredentials: true } );
 
-一旦你成功初始化了一个事件源,就可以对 message 事件添加一个处理函数开始监听从服务器发出的消息了:
+一旦初始化一个事件源,就可以对 message 事件添加一个处理函数开始监听从服务器发出的消息了:
 
 ```js
 // 监听从服务器发送来的所有没有指定事件类型的消息(没有event字段的消息)
@@ -540,9 +1016,6 @@ function longPolling() {
 }
 ```
 
-
-
-
 ## WebRTC (Web Real-Time Communications)
 
 WebRTC (Web Real-Time Communications) 是一项实时通讯技术，它允许网络应用或者站点，在不借助中间媒介的情况下，建立浏览器之间点对点（Peer-to-Peer）的连接，实现视频流和（或）音频流或者其他任意数据的传输。WebRTC包含的这些标准使用户在无需安装任何插件或者第三方的软件的情况下，创建点对点（Peer-to-Peer）的数据分享和电话会议成为可能。
@@ -552,7 +1025,269 @@ WebRTC允许在两个设备之间进行实时的对等媒体交换。通过称�
 WebRTC是一个完全对等技术，用于实时交换音频、视频和数据，同时提供一个中心警告。必须进行一种发现和媒体格式协商，以使不同网络上的两个设备相互定位的过程。这个过程被称为信令，并涉及两个设备连接到第三个共同商定的服务器。通过这个第三方服务器，这两台设备可以相互定位，并交换协商消息。
 
 
-## javaScript 类、面向对象、promise
+## javaScript promise 、类
+
+### promise
+
+一个promise对象代表一个在promise被创建出时不一定的状态值，它把异步操作最终的成功返回值或者失败原因和相应的处理程序关联起来。使得异步方法可以像同步方法一样返回值：异步方法不会立即返回最终的值，而是会返回一个promise，以便在未来某时把值交给使用者。
+一个promise必然处于以下几种状态之一：
+
+* 待定pending：初始状态，既没有被兑现，也没有被拒绝
+* 已兑现fulfilled：意味着操作成功完成
+* 已拒绝rejected：意味着操作失败
+
+待定状态的promise对象要么会通过一个值被兑现，要么会通过一个原因(错误)被拒绝rejected。当情况发生时，promise的then方法排列的相关处理程序就会被调用。如果promise在相应的处理程序被绑定时就已经被兑现或被拒绝，那么这个处理程序就会被调用，因此在完成异步操作和绑定处理方法之间不会存在竞争状态。
+
+![promise](https://mdn.mozillademos.org/files/8633/promises.png)
+
+### promise链式调用
+
+可以用`promise.then(),promise.catch(),promise.finally()`这些方法将进一步的操作与一个变为已敲定状态的promise关联起来。这些方法还会返回一个新生成的promise对象，这个对象可以被非强制性的用来做链式调用。
+
+```js
+const myPromise =
+  (new Promise(myExecutorFunc))
+  .then(handleFulfilledA)
+  .then(handleFulfilledB)
+  .then(handleFulfilledC)
+  .catch(handleRejectedAny);
+```
+
+一个已经处于已敲定settled状态的promise中的操作只有promise链式调用的栈被清空了和一个时间循环过去了之后才会被执行。
+
+### promise构造器
+
+通过new关键字和promise构造器创建它的对象。构造器接受一个名为executor function的函数，此函数接受两个函数参数。当异步任务成功时，第一个函数resolve将被调用，并返回一个值代表成功，当失败时，第二个函数reject将被调用，并返回失败原因(失败原因通常是一个error对象)。
+
+```js
+const myPromise = new Promise((resolve, reject) => {
+  // do something asynchronous which eventually calls either:
+  //
+  //   resolve(someValue)        // fulfilled
+  // or
+  //   reject("failure reason")  // rejected
+});
+
+// 提供拥有promise功能的函数，简单返回一个promise即可：
+
+function myAsyncFunction(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest() 
+    xhr.open("GET", url) 
+    xhr.onload = () => resolve(xhr.responseText) 
+    xhr.onerror = () => reject(xhr.statusText) 
+    xhr.send() 
+  });
+}
+```
+
+```js
+  function imgLoad(url) {
+    // Create new promise with the Promise() constructor;
+    // This has as its argument a function
+    // with two parameters, resolve and reject
+    return new Promise(function(resolve, reject) {
+      // Standard XHR to load an image
+      var request = new XMLHttpRequest();
+      request.open('GET', url);
+      request.responseType = 'blob';
+      // When the request loads, check whether it was successful
+      request.onload = function() {
+        if (request.status === 200) {
+        // If successful, resolve the promise by passing back the request response
+          resolve(request.response);
+        } else {
+        // If it fails, reject the promise with a error message
+          reject(Error('Image didn\'t load successfully; error code:' + request.statusText));
+        }
+      };
+      request.onerror = function() {
+      // Also deal with the case when the entire request fails to begin with
+      // This is probably a network error, so reject the promise with an appropriate message
+          reject(Error('There was a network error.'));
+      };
+      // Send the request
+      request.send();
+    });
+  }
+  // Get a reference to the body element, and create a new image object
+  var body = document.querySelector('body');
+  var myImage = new Image();
+  // Call the function with the URL we want to load, but then chain the
+  // promise then() method on to the end of it. This contains two callbacks
+  imgLoad('myLittleVader.jpg').then(function(response) {
+    // The first runs when the promise resolves, with the request.response
+    // specified within the resolve() method.
+    var imageURL = window.URL.createObjectURL(response);
+    myImage.src = imageURL;
+    body.appendChild(myImage);
+    // The second runs when the promise
+    // is rejected, and logs the Error specified with the reject() method.
+  }, function(Error) {
+    console.log(Error);
+  });
+  
+```
+
+### 静态方法
+
+`Promise.all(iterable)`
+这个方法返回一个新的promise对象，这个promise对象在iterable参数对象里所有的promise对象都成功的时候才会触发成功，一旦有任何一个iterable里的promise对象失败则立即触发该promise对象的失败。这个新的promise对象在触发成功状态后，会把一个包含iterable里所有promise返回值的数组作为成功回调的返回值，顺序跟iterable的顺序保持一致，如果这个新的promise对象出发了失败状态，它会把iterable里的第一个触发失败的promise对象的错误信息作为它的失败错误信息。
+
+`Promise.reject(reason)`
+返回一个状态为失败的Promise对象，并将给定的失败信息传递给对应的处理方法
+
+`Promise.resolve(value)`
+返回一个状态由给定value决定的Promise对象。
+
+尚在草案实验阶段的方法：
+
+* `Promise.allSettled(iterable)`：等到所有promises都已敲定（settled）（每个promise都已兑现（fulfilled）或已拒绝（rejected））。返回一个promise，该promise在所有promise完成后完成。并带有一个对象数组，每个对象对应每个promise的结果。
+
+* `Promise.any(iterable)`：接收一个Promise对象的集合，当其中的一个 promise 成功，就返回那个成功的promise的值。
+
+* `Promise.race(iteralbe)`：当iterable参数里的任意一个子promise被成功或失败后，父promise马上也会用子promise的成功返回值或失败详情作为参数调用父promise绑定的相应句柄，并返回该promise对象。
+
+
+根据promise规范，简易实现promise对象
+
+```js
+const PENDING = 'pending'
+const FULFILLED = 'fulfilled'
+const REJECTED = 'rejected'
+function Promise(executor) {
+    var _this = this
+    this.state = PENDING; //状态
+    this.value = undefined; //成功结果
+    this.reason = undefined; //失败原因
+
+    this.onFulfilled = [];//成功的回调
+    this.onRejected = []; //失败的回调
+
+    function resolve(value) {
+        if(_this.state === PENDING){
+            _this.state = FULFILLED
+            _this.value = value
+            _this.onFulfilled.forEach(fn => fn(value))
+        }
+    }
+    function reject(reason) {
+        if(_this.state === PENDING){
+            _this.state = REJECTED
+            _this.reason = reason
+            _this.onRejected.forEach(fn => fn(reason))
+        }
+    }
+    try {
+        executor(resolve, reject);
+    } catch (e) {
+        reject(e);
+    }
+}
+
+Promise.prototype.then = function (onFulfilled, onRejected) {
+    if(this.state === FULFILLED){
+        typeof onFulfilled === 'function' && onFulfilled(this.value)
+    }
+    if(this.state === REJECTED){
+        typeof onRejected === 'function' && onRejected(this.reason)
+    }
+    if(this.state === PENDING){
+        typeof onFulfilled === 'function' && this.onFulfilled.push(onFulfilled)
+        typeof onRejected === 'function' && this.onRejected.push(onRejected)
+    }
+};
+
+// 增强版
+
+Promise.prototype.then = function (onFulfilled, onRejected) {
+    var _this = this
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value
+    onRejected = typeof onRejected === 'function' ? onRejected : reason => { throw reason }
+
+    var promise2 = new Promise((resolve, reject)=>{
+      if(_this.state === FULFILLED){
+        setTimeout(()=>{
+            try {
+                let x = onFulfilled(_this.value)
+                resolvePromise(promise2, x, resolve, reject)
+            } catch (error) {
+                reject(error)
+            }
+        })
+    } else if(_this.state === REJECTED){
+        setTimeout(()=>{
+            try {                    
+                let x = onRejected(_this.reason)
+                resolvePromise(promise2, x ,resolve, reject)
+            } catch (error) {
+                reject(error)
+            }
+        })
+    } else if(_this.state === PENDING){
+        _this.onFulfilled.push(()=>{
+            setTimeout(()=>{
+                try {                        
+                    let x = onFulfilled(_this.value)
+                    resolvePromise(promise2, x, resolve, reject)
+                } catch (error) {
+                    reject(error)
+                }
+            })
+        })
+        _this.onRejected.push(()=>{
+            setTimeout(()=>{
+                try {                        
+                    let x = onRejected(_this.reason)
+                    resolvePromise(promise2, x ,resolve, reject)
+                } catch (error) {
+                    reject(error)
+                }
+            })
+        })
+    }
+    })
+
+    function resolvePromise(promise2, x, resolve, reject){
+      if(promise2 === x){
+          reject(new TypeError('Chaining cycle'))
+      }
+      if(x && typeof x === 'object' || typeof x === 'function'){
+          let used;
+          try {
+              let then = x.then
+              if(typeof then === 'function'){
+                  then.call(x, (y)=>{
+                      if (used) return;
+                      used = true
+                      resolvePromise(promise2, y, resolve, reject)
+                  }, (r) =>{
+                      if (used) return;
+                      used = true
+                      reject(r)
+                  })
+              } else {
+                  if (used) return;
+                  used = true
+                  resolve(x)
+              }
+          } catch(e){
+              if (used) return;
+              used = true
+              reject(e)
+          }
+      } else {
+          resolve(x)
+      }
+    } 
+
+    return promise2
+}
+
+
+
+```
+
 
 ### 类
 
@@ -985,133 +1720,14 @@ console.log(instance.msg);
 // 预期输出值: "hello cake"
 ```
 
-## promise
 
-一个promise对象代表一个在promise被创建出时不一定的状态值，它把异步操作最终的成功返回值或者失败原因和相应的处理程序关联起来。使得异步方法可以像同步方法一样返回值：异步方法不会立即返回最终的值，而是会返回一个promise，以便在未来某时把值交给使用者。
-一个promise必然处于以下几种状态之一：
-
-* 待定pending：初始状态，既没有被兑现，也没有被拒绝
-* 已兑现fulfilled：意味着操作成功完成
-* 已拒绝rejected：意味着操作失败
-
-待定状态的promise对象要么会通过一个值被兑现，要么会通过一个原因(错误)被拒绝rejected。当情况发生时，promise的then方法排列的相关处理程序就会被调用。如果promise在相应的处理程序被绑定时就已经被兑现或被拒绝，那么这个处理程序就会被调用，因此在完成异步操作和绑定处理方法之间不会存在竞争状态。
-
-![promise](https://mdn.mozillademos.org/files/8633/promises.png)
-
-### promise链式调用
-
-可以用`promise.then(),promise.catch(),promise.finally()`这些方法将进一步的操作与一个变为已敲定状态的promise关联起来。这些方法还会返回一个新生成的promise对象，这个对象可以被非强制性的用来做链式调用。
-
-```js
-const myPromise =
-  (new Promise(myExecutorFunc))
-  .then(handleFulfilledA)
-  .then(handleFulfilledB)
-  .then(handleFulfilledC)
-  .catch(handleRejectedAny);
-```
-
-一个已经处于已敲定settled状态的promise中的操作只有promise链式调用的栈被清空了和一个时间循环过去了之后才会被执行。
-
-### promise构造器
-
-通过new关键字和promise构造器创建它的对象。构造器接受一个名为executor function的函数，此函数接受两个函数参数。当异步任务成功时，第一个函数resolve将被调用，并返回一个值代表成功，当失败时，第二个函数reject将被调用，并返回失败原因(失败原因通常是一个error对象)。
-
-```js
-const myPromise = new Promise((resolve, reject) => {
-  // do something asynchronous which eventually calls either:
-  //
-  //   resolve(someValue)        // fulfilled
-  // or
-  //   reject("failure reason")  // rejected
-});
-
-// 提供拥有promise功能的函数，简单返回一个promise即可：
-
-function myAsyncFunction(url) {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest() 
-    xhr.open("GET", url) 
-    xhr.onload = () => resolve(xhr.responseText) 
-    xhr.onerror = () => reject(xhr.statusText) 
-    xhr.send() 
-  });
-}
-```
-
-```js
-  function imgLoad(url) {
-    // Create new promise with the Promise() constructor;
-    // This has as its argument a function
-    // with two parameters, resolve and reject
-    return new Promise(function(resolve, reject) {
-      // Standard XHR to load an image
-      var request = new XMLHttpRequest();
-      request.open('GET', url);
-      request.responseType = 'blob';
-      // When the request loads, check whether it was successful
-      request.onload = function() {
-        if (request.status === 200) {
-        // If successful, resolve the promise by passing back the request response
-          resolve(request.response);
-        } else {
-        // If it fails, reject the promise with a error message
-          reject(Error('Image didn\'t load successfully; error code:' + request.statusText));
-        }
-      };
-      request.onerror = function() {
-      // Also deal with the case when the entire request fails to begin with
-      // This is probably a network error, so reject the promise with an appropriate message
-          reject(Error('There was a network error.'));
-      };
-      // Send the request
-      request.send();
-    });
-  }
-  // Get a reference to the body element, and create a new image object
-  var body = document.querySelector('body');
-  var myImage = new Image();
-  // Call the function with the URL we want to load, but then chain the
-  // promise then() method on to the end of it. This contains two callbacks
-  imgLoad('myLittleVader.jpg').then(function(response) {
-    // The first runs when the promise resolves, with the request.response
-    // specified within the resolve() method.
-    var imageURL = window.URL.createObjectURL(response);
-    myImage.src = imageURL;
-    body.appendChild(myImage);
-    // The second runs when the promise
-    // is rejected, and logs the Error specified with the reject() method.
-  }, function(Error) {
-    console.log(Error);
-  });
-  
-```
-
-### 静态方法
-
-`Promise.all(iterable)`
-这个方法返回一个新的promise对象，这个promise对象在iterable参数对象里所有的promise对象都成功的时候才会触发成功，一旦有任何一个iterable里的promise对象失败则立即触发该promise对象的失败。这个新的promise对象在触发成功状态后，会把一个包含iterable里所有promise返回值的数组作为成功回调的返回值，顺序跟iterable的顺序保持一致，如果这个新的promise对象出发了失败状态，它会把iterable里的第一个触发失败的promise对象的错误信息作为它的失败错误信息。
-
-`Promise.reject(reason)`
-返回一个状态为失败的Promise对象，并将给定的失败信息传递给对应的处理方法
-
-`Promise.resolve(value)`
-返回一个状态由给定value决定的Promise对象。
-
-尚在草案实验阶段的方法：
-
-* `Promise.allSettled(iterable)`：等到所有promises都已敲定（settled）（每个promise都已兑现（fulfilled）或已拒绝（rejected））。返回一个promise，该promise在所有promise完成后完成。并带有一个对象数组，每个对象对应每个promise的结果。
-
-* `Promise.any(iterable)`：接收一个Promise对象的集合，当其中的一个 promise 成功，就返回那个成功的promise的值。
-
-* `Promise.race(iteralbe)`：当iterable参数里的任意一个子promise被成功或失败后，父promise马上也会用子promise的成功返回值或失败详情作为参数调用父promise绑定的相应句柄，并返回该promise对象。
 
 ## 元编程
 
 从ECMAScript 2015 开始，JavaScript 获得了 Proxy 和 Reflect 对象的支持，允许拦截并定义基本语言操作的自定义行为（例如，属性查找，赋值，枚举，函数调用等）。借助这两个对象，可以在 JavaScript 元级别进行编程。
 
 
-
+---
 
 # JavaScript
 
@@ -1419,7 +2035,7 @@ cancelAnimationFrame(rAF);
 
 ## Promise
 
-本质上，Promise 是一个对象，代表操作的中间状态 —— 正如它的单词含义 '承诺' ，它保证在未来可能返回某种结果。虽然 Promise 并不保证操作在何时完成并返回结果，但是它保证当结果可用时，代码能正确处理结果，当结果不可用时，代码同样会被执行，来优雅的处理错误。
+本质上，Promise 是一个对象，代表操作的中间状态 。虽然 Promise 并不保证操作在何时完成并返回结果，但是它保证当结果可用时，代码能正确处理结果，当结果不可用时，代码同样会被执行，来优雅的处理错误。
 
 设想一个视频聊天应用程序，该程序有一个展示用户的朋友列表的窗口，可以点击朋友旁边的按钮对朋友视频呼叫。
 
@@ -1472,10 +2088,10 @@ console.log ('All done!');
 
 1. 创建promise时，它既不是成功也不是失败状态。这个状态叫作pending（待定）。
 2. 当promise返回时，称为 resolved（已解决）.
+
     * 一个成功resolved的promise称为fullfilled（实现）。它返回一个值，可以通过将.then()块链接到promise链的末尾来访问该值。 .then()块中的执行程序函数将包含promise的返回值。
 
     * 一个不成功resolved的promise被称为rejected（拒绝）了。它返回一个原因（reason），一条错误消息，说明为什么拒绝promise。可以通过将.catch()块链接到promise链的末尾来访问此原因。
-
 
 ### 构建自定义promise
 
@@ -1488,7 +2104,6 @@ const myPromise = new Promise((resolve, reject) => {
   //   reject("failure reason")  // rejected
 });
 ```
-
 
 ## async 和 await
 
@@ -1507,7 +2122,6 @@ async function hello() {
 
 hello().then(alert);
 ```
-
 
 async/await 重写promise代码
 
@@ -1659,5 +2273,274 @@ han.greeting().then(console.log);
 
 ## Web API
 
+### 什么是API
+应用程序接口（API，Application Programming Interface）是基于编程语言构建的结构，使开发人员更容易地创建复杂的功能。它们抽象了复杂的代码，并提供一些简单的接口规则直接使用。
 
+比如说，编程来显示一些3D图形，使用以更高级语言编写的API（例如JavaScript或Python）将会比直接编写直接控制计算机的GPU或其他图形功能的低级代码（比如C或C++）来执行操作要容易得多。
+
+### 客户端JavaScript中的API
+
+客户端JavaScript中有很多可用的API — 它们本身并不是JavaScript语言的一部分，却建立在JavaScript语言核心的顶部，为使用JavaScript代码提供额外的超强能力。通常分为两类：
+
+* 浏览器API内置于Web浏览器中，能从浏览器和电脑周边环境中提取数据，并用来做有用的复杂的事情 。
+
+* 第三方API缺省情况下不会内置于浏览器中，通常必须在Web中的某个地方获取代码和信息。
+
+
+### 常见浏览器API
+
+* 操作文档的API，内置于浏览器中。最明显的例子是DOM（文档对象模型）API，它操作HTML和CSS — 创建、移除以及修改HTML，动态地将新样式应用到您的页面，等等。
+
+* 从服务器获取数据的API，用于更新网页的一小部分。API包括XMLHttpRequest和Fetch API。
+* 用于绘制和操作图形的API，目前已被浏览器广泛支持 — 最流行的是以编程方式更新包含在HTML`<canvas>`元素中的像素数据以创建2D和3D场景的Canvas和WebGL。
+
+* 音频和视频API。例如HTMLMediaElement，Web Audio API和WebRTC使用多媒体来做一些非常有趣的事情，比如创建用于播放音频和视频的自定义UI控件，显示字幕视频，从网络摄像机抓取视频，通过画布操纵（见上），或在网络会议中显示在别人的电脑上，或者添加效果到音轨（如增益，失真，平移等） 。
+
+* 设备API，基本上是以对网络应用程序有用的方式操作和检索现代设备硬件中的数据的API。比如访问设备位置数据的地理定位API，可以在地图上标注位置。还包括通过系统通知（Notifications API）或振动硬件（Vibration API）告诉用户Web应用程序有用的更新可用。
+
+* 客户端存储API，如果想创建一个应用程序来保存页面加载之间的状态，甚至让设备在处于脱机状态时可用，那么在客户端存储数据非常有用。例如使用Web Storage API的简单的键 - 值存储以及使用IndexedDB API的更复杂的表格数据存储
+
+### API 如何工作
+
+**基于对象**
+
+例：Geolocation API  由几个简单的对象组成
+
+* Geolocation, 其中包含三种控制地理数据检索的方法
+
+* Position, 表示在给定的时间的相关设备的位置。 — 它包含一个当前位置Coordinates 对象。还包含了一个时间戳,这个时间戳表示获取到位置的时间。
+
+* Coordinates, 其中包含有关设备位置的大量有用数据，包括经纬度，高度，运动速度和运动方向等。
+
+示例：
+
+```js
+navigator.geolocation.getCurrentPosition(function(position) {
+  var latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+  var myOptions = {
+    zoom: 8,
+    center: latlng,
+    mapTypeId: google.maps.MapTypeId.TERRAIN,
+    disableDefaultUI: true
+  }
+  var map = new google.maps.Map(document.querySelector("#map_canvas"), myOptions);
+});
+```
+
+首先要使用 Geolocation.getCurrentPosition() 方法返回设备的当前位置。浏览器的 Geolocation 对象通过调用 Navigator.geolocation 属性来访问.
+
+Geolocation.getCurrentPosition() 方法只有一个必须的参数，这个参数是一个匿名函数，当设备的当前位置被成功取到时，这个函数会运行。 这个函数本身有一个参数，它包含一个表示当前位置数据的 Position 对象。
+
+将Geolocation API与第三方API（Google Maps API）相结合， — 使用它绘制Google地图上由 getCurrentPosition()返回的位置。
+
+引入第三方API
+
+    <script type="text/javascript" src="https://maps.google.com/maps/API/js?key=AIzaSyDDuGt0E5IEGkcE6ZfrKfUtE9Ko_de66pA"></script>
+
+使用该API 
+
+首先使用google.maps.LatLng()构造函数创建一个LatLng对象实例， 该构造函数需要地理定位 Coordinates.latitude 和 Coordinates.longitude值作为参数
+
+    var latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+
+该对象实例被设置为 myOptions对象的center属性的值。然后通过调用google.maps.Map()构造函数创建一个对象实例来表示我们的地图， 并传递它两个参数 — 一个参数要渲染地图的 div元素的引用(ID为 map_canvas), 另一个参数是定义的myOptions对象
+
+```js
+var myOptions = {
+  zoom: 8,
+  center: latlng,
+  mapTypeId: google.maps.MapTypeId.TERRAIN,
+  disableDefaultUI: true
+}
+
+var map = new google.maps.Map(document.querySelector("#map_canvas"), myOptions);
+```
+
+地图呈现。
+
+**可识别的入口点**
+
+使用API时，应确保知道API入口点的位置。
+
+Geolocation API中是 Navigator.geolocation 属性, 它返回浏览器的 Geolocation 对象，所有有用的地理定位方法都可用。
+
+文档对象模型 (DOM) API，它往往挂在 Document 对象, 或任何想影响的HTML元素的实例
+
+```js
+var em = document.createElement('em'); // create a new em element
+var para = document.querySelector('p'); // reference an existing p element
+em.textContent = 'Hello there!'; // give em some text content
+para.appendChild(em); // embed em inside para
+```
+
+具有稍微复杂的入口点de API，通常涉及为要编写的API代码创建特定的上下文。
+
+例如：Canvas API的上下文对象是通过获取要绘制的`<canvas>`元素的引用来创建，然后调用它的HTMLCanvasElement.getContext()方法：
+
+```js
+var canvas = document.querySelector('canvas');
+var ctx = canvas.getContext('2d');
+
+Ball.prototype.draw = function() {
+  ctx.beginPath();
+  ctx.fillStyle = this.color;
+  ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+  ctx.fill();
+};
+```
+
+然后通过调用内容对象ctx的属性和方法实现想对画布进行的任何操作
+
+**使用事件处理状态的变化**
+
+例如：XMLHttpRequest 对象，它的实例代表一个到服务器的HTTP请求,来取得某种新的资源。onload事件在成功返回时触发包含请求的资源
+
+```js
+var requestURL = 'https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json';
+var request = new XMLHttpRequest();
+request.open('GET', requestURL);
+request.responseType = 'json';
+request.send();
+
+request.onload = function() {
+  var superHeroes = request.response;
+  populateHeader(superHeroes);
+  showHeroes(superHeroes);
+}
+```
+
+指定获取的资源的位置，使用XMLHttpRequest() 构造函数创建请求对象的新实例，打开HTTP 的 GET 请求以取得指定资源，指定响应以JSON格式发送，然后发送请求。
+
+然后 onload 处理函数指定如何处理响应。
+
+**适当的地方有额外的安全机制**
+
+WebAPI功能受到与JavaScript和其他Web技术（例如同源政策）相同的安全考虑限制，但是有的API会有额外的安全机制。
+
+比如权限启用请求，通知许可等
+
+## 操作文档
+
+下图表表示直接出现在web页面视图中的浏览器的主要部分：
+
+![](https://mdn.mozillademos.org/files/14557/document-window-navigator.png)
+
+* window是载入浏览器的标签，在JavaScript中用Window对象来表示，使用这个对象可以返回窗口的大小（Window.innerWidth和Window.innerHeight），操作载入窗口的文档，存储客户端上文档的特殊数据（例如使用本地数据库或其他存储设备），为当前窗口绑定event handler，等等。
+* navigator表示浏览器存在于web上的状态和标识（即用户代理）。在JavaScript中，用Navigator来表示,可以用这个对象获取一些信息，比如来自用户摄像头的地理信息、用户偏爱的语言、多媒体流等等。
+* document（浏览器中用DOM表示）是载入窗口的实际页面，在JavaScript中用Document 对象表示，可以用这个对象来返回和操作文档中HTML和CSS上的信息。
+
+### 文档对象模型 DOM
+
+在浏览器标签中当前载入的文档用文档对象模型来表示。是一个由浏览器生成的“树结构”，使编程语言可以很容易的访问HTML结构
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Simple DOM example</title>
+  </head>
+  <body>
+      <section>
+        <img src="dinosaur.png" alt="A red Tyrannosaurus Rex: A two legged dinosaur standing upright like a human, with small arms, and a large head with lots of sharp teeth.">
+        <p>Here we will add a link to the <a href="https://www.mozilla.org/">Mozilla homepage</a></p>
+      </section>
+  </body>
+</html>
+```
+
+DOM 树
+
+![DOM树](https://mdn.mozillademos.org/files/14559/dom-screenshot.png)
+
+元素节点: 一个元素，存在于DOM中。
+根节点: 树中顶层节点，在HTML的情况下，总是一个HTML节点
+子节点: 直接位于另一个节点内的节点
+后代节点: 位于另一个节点内任意位置的节点。
+父节点: 里面有另一个节点的节点。
+兄弟节点: DOM树中位于同一等级的节点。
+文本节点: 包含文字串的节点
+
+***引用选择节点**
+
+Document.querySelector()
+Document.querySelectorAll()
+Document.getElementById()
+Document.getElementsByTagName()
+
+**创建节点**
+
+Document.createElement() 元素节点
+Document.createTextNode() 文本节点
+
+**添加、删除节点**
+
+node.appendChild(otherNode) 添加节点
+
+node.removeChild(otherNode) 删除节点
+或者 otherNode.parentNode.removeChild(otherNode) 
+
+**操作样式**
+
+HTMLElement.style 属性，包含文档中每个元素的内联样式信息。可以设置这个对象的属性直接修改元素样式。
+
+```js
+para.style.color = 'white';
+para.style.backgroundColor = 'black';
+para.style.padding = '10px';
+para.style.width = '250px';
+para.style.textAlign = 'center';
+```
+
+或者使用Element.setAttribute()设置属性
+它有两个参数，想在元素上设置的属性，为它设置的值。
+
+    para.setAttribute('class', 'highlight');
+
+
+## 从服务器获取数据
+
+### Ajax  
+Asynchronous JavaScript and XML，允许网页直接处理对服务器上可用的特定资源的 HTTP 请求，并在显示之前根据需要对结果数据进行格式化。早期，它倾向于使用XMLHttpRequest 来请求XML数据，现在，使用 XMLHttpRequest 或 Fetch 来请求JSON, 结果是一样的，术语“Ajax”仍然常用于描述这种技术。
+
+![Ajax](https://mdn.mozillademos.org/files/6477/moderne-web-site-architechture@2x.png)
+
+Ajax模型涉及使用 Web API 作为代理来更智能地请求数据，而不仅仅是让浏览器重新加载整个页面。
+
+为了进一步加快速度，一些站点还在用户第一次请求时将资产和数据存储在用户的计算机上，意味着在随后的访问中，使用本地版本而不是每次首次加载页面时下载新副本。内容仅在更新后才从服务器重新加载。
+
+![](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data/web-app-architecture@2x.png)
+
+简单示例：
+
+XMLHttpRequest
+
+```js
+let request = new XMLHttpRequest();
+request.open('GET', url);
+request.responseType = 'text';
+
+request.onload = function() {
+  poemDisplay.textContent = request.response;
+};
+
+request.send();
+```
+
+Fetch
+
+```js
+fetch(url).then(function(response) {
+  if(response.ok) {
+    response.blob().then(function(blob) {
+      objectURL = URL.createObjectURL(blob);
+      showProduct(objectURL, product);
+    });
+  } else {
+    console.log('Network request for "' + product.name + '" image failed with response ' + response.status + ': ' + response.statusText);
+  }
+});
+```
+
+## 客户端存储
 
