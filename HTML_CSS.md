@@ -1121,11 +1121,77 @@ and ， not
 
 ## `<canvas>`
 
+`<canvas>`是一个可以使用脚本(通常为JavaScript)来绘制2D图形的 HTML 元素.
+
+### 准备画布
+
+需要一个 canvas 元素,并设置一个 onload 事件处理程序来初始化 canvas 上下文 
+```html
+<body onload="draw();">
+   <canvas id="canvas" width="150" height="150">
+     你的浏览器似乎不支持或者禁用了HTML5 <code>&lt;canvas&gt;</code> 元素.
+   </canvas>
+ </body>
+```
+
+### 渲染上下文
+
+canvas起初是空白的，为了展示，需要找到渲染上下文。使用cavans的getContext()方法获得渲染上下文和绘画功能。
+
+```js
+function draw() {
+  var canvas = document.getElementById("canvas");
+  // 初始化canvas上下文
+  var ctx = canvas.getContext("2d")
+  if (!ctx) {
+    alert("无法初始化canvas，你的浏览器、操作系统或硬件等可能不支持canvas。");
+    return;
+  }
+  // 绘制图形
+  ctx.fillStyle = "rgb(200,0,0)";
+  ctx.fillRect (10, 10, 55, 50)
+  ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
+  ctx.fillRect (30, 30, 55, 50);
+}
+```
 
 ## WebGL
 
----
+WebGL（Web图形库）是一个JavaScript API，可在任何兼容的Web浏览器中渲染高性能的交互式3D和2D图形，而无需使用插件。
 
-# 视频和音频API
+### 准备 3D 渲染
+
+使用 WebGL 进行 3D 渲染，首先需要一个 canvas 元素,并设置一个 onload 事件处理程序来初始化 WebGL 上下文 
+
+```html
+<body onload="main()">
+  <canvas id="glcanvas" width="640" height="480">
+    你的浏览器似乎不支持或者禁用了HTML5 <code>&lt;canvas&gt;</code> 元素.
+  </canvas>
+</body>
+```
+
+### 准备 WebGL 上下文
+
+设置 WebGL 上下文并开始渲染内容。
+
+```js
+function main() {
+  const canvas = document.querySelector("#glcanvas");
+  // 初始化WebGL上下文
+  const gl = canvas.getContext("webgl");
+
+  // 确认WebGL支持性
+  if (!gl) {
+    alert("无法初始化WebGL，你的浏览器、操作系统或硬件等可能不支持WebGL。");
+    return;
+  }
+
+  // 使用完全不透明的黑色清除所有图像
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  // 用上面指定的颜色清除缓冲区
+  gl.clear(gl.COLOR_BUFFER_BIT);
+}
+```
 
 

@@ -291,6 +291,7 @@ request和response都会试着自动设置Content-Type，如果没有设置Conte
 Fetch 的核心在于对 HTTP 接口的抽象，包括 Request，Response，Headers，Body，以及用于初始化异步请求的 global fetch。
 
 ---
+
 ## Web Workers API
 
 通过使用Web Workers，Web应用程序可以在独立于主线程的后台线程中，运行一个脚本操作。可以在独立线程中执行费时的处理任务，从而允许主线程（通常是UI线程）不会因此被阻塞/放慢。
@@ -403,6 +404,8 @@ onmessage = function(e) {
 worker线程会被立即杀死，不会有任何机会让它完成自己的操作或清理工作。
 
 worker线程中，workers 也可以调用close()方法进行关闭
+
+---
 
 ## Service Worker API
 
@@ -709,7 +712,19 @@ self.addEventListener('activate', function(event) {
 });
 ```
 activate事件
+
 ----
+
+## WebRTC (Web Real-Time Communications)
+
+WebRTC (Web Real-Time Communications) 是一项实时通讯技术，它允许网络应用或者站点，在不借助中间媒介的情况下，建立浏览器之间点对点（Peer-to-Peer）的连接，实现视频流和（或）音频流或者其他任意数据的传输。WebRTC包含的这些标准使用户在无需安装任何插件或者第三方的软件的情况下，创建点对点（Peer-to-Peer）的数据分享和电话会议成为可能。
+
+WebRTC允许在两个设备之间进行实时的对等媒体交换。通过称为信令的发现和协商过程建立连接。
+
+WebRTC是一个完全对等技术，用于实时交换音频、视频和数据，同时提供一个中心警告。必须进行一种发现和媒体格式协商，以使不同网络上的两个设备相互定位的过程。这个过程被称为信令，并涉及两个设备连接到第三个共同商定的服务器。通过这个第三方服务器，这两台设备可以相互定位，并交换协商消息。
+
+---
+
 ## webSocket
 
 WebSocket 它可以在用户的浏览器和服务器之间打开交互式通信会话。可以向服务器发送消息并接收事件驱动的响应，而无需通过轮询服务器的方式以获得响应
@@ -858,6 +873,7 @@ socket.addEventListener("close", function(event) {
 ### 服务端实现
 有websocket客户端就必须有WebSocket服务器
 
+---
 
 ## SSE Server-sent Events
 
@@ -968,6 +984,7 @@ EventSource.close()
 使用 addEventListener() 或将一个事件监听器赋值给本接口的 oneventname 属性，来监听下面的事件。
 
 error message open
+---
 
 ## 轮询
 
@@ -1016,14 +1033,546 @@ function longPolling() {
 }
 ```
 
-## WebRTC (Web Real-Time Communications)
+---
 
-WebRTC (Web Real-Time Communications) 是一项实时通讯技术，它允许网络应用或者站点，在不借助中间媒介的情况下，建立浏览器之间点对点（Peer-to-Peer）的连接，实现视频流和（或）音频流或者其他任意数据的传输。WebRTC包含的这些标准使用户在无需安装任何插件或者第三方的软件的情况下，创建点对点（Peer-to-Peer）的数据分享和电话会议成为可能。
+# Web API
 
-WebRTC允许在两个设备之间进行实时的对等媒体交换。通过称为信令的发现和协商过程建立连接。
+## 什么是API
+应用程序接口（API，Application Programming Interface）是基于编程语言构建的结构，使开发人员更容易地创建复杂的功能。它们抽象了复杂的代码，并提供一些简单的接口规则直接使用。
 
-WebRTC是一个完全对等技术，用于实时交换音频、视频和数据，同时提供一个中心警告。必须进行一种发现和媒体格式协商，以使不同网络上的两个设备相互定位的过程。这个过程被称为信令，并涉及两个设备连接到第三个共同商定的服务器。通过这个第三方服务器，这两台设备可以相互定位，并交换协商消息。
+比如说，编程来显示一些3D图形，使用以更高级语言编写的API（例如JavaScript或Python）将会比直接编写直接控制计算机的GPU或其他图形功能的低级代码（比如C或C++）来执行操作要容易得多。
 
+### 客户端JavaScript中的API
+
+客户端JavaScript中有很多可用的API — 它们本身并不是JavaScript语言的一部分，却建立在JavaScript语言核心的顶部，为使用JavaScript代码提供额外的超强能力。通常分为两类：
+
+* 浏览器API内置于Web浏览器中，能从浏览器和电脑周边环境中提取数据，并用来做有用的复杂的事情 。
+
+* 第三方API缺省情况下不会内置于浏览器中，通常必须在Web中的某个地方获取代码和信息。
+
+
+### 常见浏览器API
+
+* 操作文档的API，内置于浏览器中。最明显的例子是DOM（文档对象模型）API，它操作HTML和CSS — 创建、移除以及修改HTML，动态地将新样式应用到您的页面，等等。
+
+* 从服务器获取数据的API，用于更新网页的一小部分。API包括XMLHttpRequest和Fetch API。
+* 用于绘制和操作图形的API，目前已被浏览器广泛支持 — 最流行的是以编程方式更新包含在HTML`<canvas>`元素中的像素数据以创建2D和3D场景的Canvas和WebGL。
+
+* 音频和视频API。例如HTMLMediaElement，Web Audio API和WebRTC使用多媒体来做一些非常有趣的事情，比如创建用于播放音频和视频的自定义UI控件，显示字幕视频，从网络摄像机抓取视频，通过画布操纵（见上），或在网络会议中显示在别人的电脑上，或者添加效果到音轨（如增益，失真，平移等） 。
+
+* 设备API，基本上是以对网络应用程序有用的方式操作和检索现代设备硬件中的数据的API。比如访问设备位置数据的地理定位API，可以在地图上标注位置。还包括通过系统通知（Notifications API）或振动硬件（Vibration API）告诉用户Web应用程序有用的更新可用。
+
+* 客户端存储API，如果想创建一个应用程序来保存页面加载之间的状态，甚至让设备在处于脱机状态时可用，那么在客户端存储数据非常有用。例如使用Web Storage API的简单的键 - 值存储以及使用IndexedDB API的更复杂的表格数据存储
+
+### API 如何工作
+
+**基于对象**
+
+例：Geolocation API  由几个简单的对象组成
+
+* Geolocation, 其中包含三种控制地理数据检索的方法
+
+* Position, 表示在给定的时间的相关设备的位置。 — 它包含一个当前位置Coordinates 对象。还包含了一个时间戳,这个时间戳表示获取到位置的时间。
+
+* Coordinates, 其中包含有关设备位置的大量有用数据，包括经纬度，高度，运动速度和运动方向等。
+
+示例：
+
+```js
+navigator.geolocation.getCurrentPosition(function(position) {
+  var latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+  var myOptions = {
+    zoom: 8,
+    center: latlng,
+    mapTypeId: google.maps.MapTypeId.TERRAIN,
+    disableDefaultUI: true
+  }
+  var map = new google.maps.Map(document.querySelector("#map_canvas"), myOptions);
+});
+```
+
+首先要使用 Geolocation.getCurrentPosition() 方法返回设备的当前位置。浏览器的 Geolocation 对象通过调用 Navigator.geolocation 属性来访问.
+
+Geolocation.getCurrentPosition() 方法只有一个必须的参数，这个参数是一个匿名函数，当设备的当前位置被成功取到时，这个函数会运行。 这个函数本身有一个参数，它包含一个表示当前位置数据的 Position 对象。
+
+将Geolocation API与第三方API（Google Maps API）相结合， — 使用它绘制Google地图上由 getCurrentPosition()返回的位置。
+
+引入第三方API
+
+    <script type="text/javascript" src="https://maps.google.com/maps/API/js?key=AIzaSyDDuGt0E5IEGkcE6ZfrKfUtE9Ko_de66pA"></script>
+
+使用该API 
+
+首先使用google.maps.LatLng()构造函数创建一个LatLng对象实例， 该构造函数需要地理定位 Coordinates.latitude 和 Coordinates.longitude值作为参数
+
+    var latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+
+该对象实例被设置为 myOptions对象的center属性的值。然后通过调用google.maps.Map()构造函数创建一个对象实例来表示我们的地图， 并传递它两个参数 — 一个参数要渲染地图的 div元素的引用(ID为 map_canvas), 另一个参数是定义的myOptions对象
+
+```js
+var myOptions = {
+  zoom: 8,
+  center: latlng,
+  mapTypeId: google.maps.MapTypeId.TERRAIN,
+  disableDefaultUI: true
+}
+
+var map = new google.maps.Map(document.querySelector("#map_canvas"), myOptions);
+```
+
+地图呈现。
+
+**可识别的入口点**
+
+使用API时，应确保知道API入口点的位置。
+
+Geolocation API中是 Navigator.geolocation 属性, 它返回浏览器的 Geolocation 对象，所有有用的地理定位方法都可用。
+
+文档对象模型 (DOM) API，它往往挂在 Document 对象, 或任何想影响的HTML元素的实例
+
+```js
+var em = document.createElement('em'); // create a new em element
+var para = document.querySelector('p'); // reference an existing p element
+em.textContent = 'Hello there!'; // give em some text content
+para.appendChild(em); // embed em inside para
+```
+
+具有稍微复杂的入口点de API，通常涉及为要编写的API代码创建特定的上下文。
+
+例如：Canvas API的上下文对象是通过获取要绘制的`<canvas>`元素的引用来创建，然后调用它的HTMLCanvasElement.getContext()方法：
+
+```js
+var canvas = document.querySelector('canvas');
+var ctx = canvas.getContext('2d');
+
+Ball.prototype.draw = function() {
+  ctx.beginPath();
+  ctx.fillStyle = this.color;
+  ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+  ctx.fill();
+};
+```
+
+然后通过调用内容对象ctx的属性和方法实现想对画布进行的任何操作
+
+**使用事件处理状态的变化**
+
+例如：XMLHttpRequest 对象，它的实例代表一个到服务器的HTTP请求,来取得某种新的资源。onload事件在成功返回时触发包含请求的资源
+
+```js
+var requestURL = 'https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json';
+var request = new XMLHttpRequest();
+request.open('GET', requestURL);
+request.responseType = 'json';
+request.send();
+
+request.onload = function() {
+  var superHeroes = request.response;
+  populateHeader(superHeroes);
+  showHeroes(superHeroes);
+}
+```
+
+指定获取的资源的位置，使用XMLHttpRequest() 构造函数创建请求对象的新实例，打开HTTP 的 GET 请求以取得指定资源，指定响应以JSON格式发送，然后发送请求。
+
+然后 onload 处理函数指定如何处理响应。
+
+**适当的地方有额外的安全机制**
+
+WebAPI功能受到与JavaScript和其他Web技术（例如同源政策）相同的安全考虑限制，但是有的API会有额外的安全机制。
+
+比如权限启用请求，通知许可等
+
+## 操作文档
+
+下图表表示直接出现在web页面视图中的浏览器的主要部分：
+
+![](https://mdn.mozillademos.org/files/14557/document-window-navigator.png)
+
+* window是载入浏览器的标签，在JavaScript中用Window对象来表示，使用这个对象可以返回窗口的大小（Window.innerWidth和Window.innerHeight），操作载入窗口的文档，存储客户端上文档的特殊数据（例如使用本地数据库或其他存储设备），为当前窗口绑定event handler，等等。
+* navigator表示浏览器存在于web上的状态和标识（即用户代理）。在JavaScript中，用Navigator来表示,可以用这个对象获取一些信息，比如来自用户摄像头的地理信息、用户偏爱的语言、多媒体流等等。
+* document（浏览器中用DOM表示）是载入窗口的实际页面，在JavaScript中用Document 对象表示，可以用这个对象来返回和操作文档中HTML和CSS上的信息。
+
+### 文档对象模型 DOM
+
+在浏览器标签中当前载入的文档用文档对象模型来表示。是一个由浏览器生成的“树结构”，使编程语言可以很容易的访问HTML结构
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Simple DOM example</title>
+  </head>
+  <body>
+      <section>
+        <img src="dinosaur.png" alt="A red Tyrannosaurus Rex: A two legged dinosaur standing upright like a human, with small arms, and a large head with lots of sharp teeth.">
+        <p>Here we will add a link to the <a href="https://www.mozilla.org/">Mozilla homepage</a></p>
+      </section>
+  </body>
+</html>
+```
+
+DOM 树
+
+![DOM树](https://mdn.mozillademos.org/files/14559/dom-screenshot.png)
+
+元素节点: 一个元素，存在于DOM中。
+根节点: 树中顶层节点，在HTML的情况下，总是一个HTML节点
+子节点: 直接位于另一个节点内的节点
+后代节点: 位于另一个节点内任意位置的节点。
+父节点: 里面有另一个节点的节点。
+兄弟节点: DOM树中位于同一等级的节点。
+文本节点: 包含文字串的节点
+
+***引用选择节点**
+
+Document.querySelector()
+Document.querySelectorAll()
+Document.getElementById()
+Document.getElementsByTagName()
+
+**创建节点**
+
+Document.createElement() 元素节点
+Document.createTextNode() 文本节点
+
+**添加、删除节点**
+
+node.appendChild(otherNode) 添加节点
+
+node.removeChild(otherNode) 删除节点
+或者 otherNode.parentNode.removeChild(otherNode) 
+
+**操作样式**
+
+HTMLElement.style 属性，包含文档中每个元素的内联样式信息。可以设置这个对象的属性直接修改元素样式。
+
+```js
+para.style.color = 'white';
+para.style.backgroundColor = 'black';
+para.style.padding = '10px';
+para.style.width = '250px';
+para.style.textAlign = 'center';
+```
+
+或者使用Element.setAttribute()设置属性
+它有两个参数，想在元素上设置的属性，为它设置的值。
+
+    para.setAttribute('class', 'highlight');
+
+
+## 从服务器获取数据
+
+### Ajax  
+Asynchronous JavaScript and XML，允许网页直接处理对服务器上可用的特定资源的 HTTP 请求，并在显示之前根据需要对结果数据进行格式化。早期，它倾向于使用XMLHttpRequest 来请求XML数据，现在，使用 XMLHttpRequest 或 Fetch 来请求JSON, 结果是一样的，术语“Ajax”仍然常用于描述这种技术。
+
+![Ajax](https://mdn.mozillademos.org/files/6477/moderne-web-site-architechture@2x.png)
+
+Ajax模型涉及使用 Web API 作为代理来更智能地请求数据，而不仅仅是让浏览器重新加载整个页面。
+
+为了进一步加快速度，一些站点还在用户第一次请求时将资产和数据存储在用户的计算机上，意味着在随后的访问中，使用本地版本而不是每次首次加载页面时下载新副本。内容仅在更新后才从服务器重新加载。
+
+![](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data/web-app-architecture@2x.png)
+
+简单示例：
+
+XMLHttpRequest
+
+```js
+let request = new XMLHttpRequest();
+request.open('GET', url);
+request.responseType = 'text';
+
+request.onload = function() {
+  poemDisplay.textContent = request.response;
+};
+
+request.send();
+```
+
+Fetch
+
+```js
+fetch(url).then(function(response) {
+  if(response.ok) {
+    response.blob().then(function(blob) {
+      objectURL = URL.createObjectURL(blob);
+      showProduct(objectURL, product);
+    });
+  } else {
+    console.log('Network request for "' + product.name + '" image failed with response ' + response.status + ': ' + response.statusText);
+  }
+});
+```
+
+## 客户端存储
+
+大多数现代的web站点是动态的— 它们在服务端使用各种类型的数据库来存储数据(服务端存储), 之后通过运行服务端（ server-side） 代码来重新获取需要的数据，把其数据插入到静态页面的模板中，并且生成出HTML渲染到用户浏览上。
+
+客户端存储以相同的原理工作，但是在使用上有一些不同。它是由 JavaScript APIs 组成，允许在客户端存储数据 (比如在用户的机器上)，而且可以在需要的时候重新取得需要的数据。
+
+### 传统方法：cookies
+
+它过时、存在各种安全问题，而且无法存储复杂数据
+
+```js
+// 设置cookie
+const docCookies = document.cookie
+// 写入cookie
+docCookies.setItem(name, value[, end[, path[, domain[, secure]]]])
+// 得到cookie
+docCookies.getItem(name)
+// 移除cookie
+docCookies.removeItem(name[, path],domain)
+// 检测cookie
+docCookies.hasItem(name)
+// 得到cookie列表
+docCookies.keys()
+```
+
+### 新流派：Web Storage 和 IndexedDB
+
+* Web Storage API 提供了一种非常简单的语法，用于存储和检索较小的、由名称和相应值组成的数据项。当您只需要存储一些简单的数据时，比如用户的名字，用户是否登录，屏幕背景使用了什么颜色等等，这是非常有用的。
+
+* IndexedDB API 为浏览器提供了一个完整的数据库系统来存储复杂的数据。这可以用于存储从完整的用户记录到甚至是复杂的数据类型，如音频或视频文件。
+
+### 未来：Cache API
+
+这个API是为存储特定HTTP请求的响应文件而设计的，它对于像存储离线网站文件这样的事情非常有用，这样网站就可以在没有网络连接的情况下使用。缓存通常与 Service Worker API 组合使用
+
+### 存储简单数据 — web storage
+
+Web Storage API 非常容易使用 — 只需存储简单的 键名/键值对数据 (限制为字符串、数字等类型) 并在需要的时候检索其值。
+
+web storage 数据都包含在浏览器内两个类似于对象的结构中： sessionStorage 和 localStorage。 
+
+* sessionStorage 为每一个给定的源（given origin）维持一个独立的存储区域，该存储区域在页面会话期间可用（即只要浏览器处于打开状态，包括页面重新加载和恢复）。
+* localStorage 同样的功能，但是在浏览器关闭，然后重新打开后数据仍然存在。
+
+Storage.setItem() 存储数据项，两个参数：数据项的名字及其值
+
+Storage.getItem() 获取数据项，一个参数——要检索的数据项的名称
+
+Storage.removeItem() 删除数据项，一个参数——要删除的数据项名称
+
+Storage.clear() 不接受参数，只是简单地清空域名对应的整个存储对象。
+
+```js
+localStorage.setItem('name','Chris');
+
+const myName = localStorage.getItem('name');
+
+localStorage.removeItem('name');
+
+localStorage.clear()
+```
+
+### 存储复杂数据 — IndexedDB
+
+IndexedDB 是一种底层 API，用于在客户端存储大量的结构化数据（也包括文件/二进制大型对象（blobs））。该 API 使用索引实现对数据的高性能搜索。
+
+IndexedDB 是一个事务型数据库系统,是一个基于 JavaScript 的面向对象数据库。允许存储和检索用键索引的对象；可以存储结构化克隆算法支持的任何对象。
+使用：指定数据库模式，打开与数据库的连接，然后检索和更新一系列事务。
+
+**基本模式**
+
+1. 打开数据库。
+2. 在数据库中创建一个对象仓库（object store）。
+3. 启动一个事务，并发送一个请求来执行一些数据库操作，像增加或提取数据等。
+4. 通过监听正确类型的 DOM 事件以等待操作完成。
+5. 在操作结果上进行一些操作（可以在 request 对象中找到）
+
+检测是否支持indexedDB
+
+    if (!window.indexedDB) {
+        console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.")
+}
+
+**打开数据库**
+
+    const request = window.indexedDB.open("MyTestDatabase");
+
+open 请求不会立即打开数据库或者开始一个事务。 对 open() 函数的调用会返回一个可以作为事件来处理的包含 result（成功的话）或者错误值的 IDBOpenDBRequest对象
+
+open 方法接受第二个参数，数据库的版本号。数据库的版本决定了数据库架构，即数据库的对象仓库（object store）和结构。如果数据库不存在，open 操作会创建该数据库，然后 onupgradeneeded 事件被触发，需要在该事件的处理函数中创建数据库模式。如果数据库已经存在，但指定一个更高的数据库版本，会直接触发 onupgradeneeded 事件，允许在处理函数中更新数据库模式。
+
+**生成处理函数**
+
+```js
+request.onerror = function(event) {
+  // Do something with request.errorCode!
+};
+request.onsuccess = function(event) {
+  // Do something with request.result!
+};
+```
+
+onsuccess() 和 onerror() 这两个函数哪个被调用呢？如果一切顺利，success 事件会被触发，request 会作为它的 target。 一旦被触发，相关 request 的 onsuccess() 处理函数就会被触发，使用 success 事件作为它的参数。 否则，error 事件会在 request 上被触发。这将会触发使用 error 事件作为参数的 onerror()方法。
+
+现在，假设用户已经允许要创建一个数据库的请求，同时收到触发 success 回调的 success 事件；然后request 是通过调用 indexedDB.open() 产生的， 所以 request.result 是一个 IDBDatabase 的实例，而且希望把它保存下来以供后面使用。
+
+```js
+var db;
+var request = indexedDB.open("MyTestDatabase");
+request.onerror = function(event) {
+  alert("Why didn't you allow my web app to use IndexedDB?!");
+};
+request.onsuccess = function(event) {
+  db = event.target.result;
+};
+```
+
+**错误处理**
+
+错误事件遵循冒泡机制。错误事件都是针对产生这些错误的请求的，然后事件冒泡到事务，然后最终到达数据库对象。避免为所有的请求都增加错误处理程序，可以替代性仅对数据库对象添加一个错误处理程序
+
+```js
+db.onerror = function(event) {
+  // Generic error handler for all errors targeted at this database's
+  // requests!
+  console.log("Database error: " + event.target.errorCode);
+};
+```
+
+打开数据库时常见的可能出现的错误之一是 VER_ERR。这表明存储在磁盘上的数据库的版本高于试图打开的版本。
+
+**创建和更新数据库版本号**
+
+创建一个新的数据库或者增加已存在的数据库的版本号，onupgradeneeded 事件会被触发，IDBVersionChangeEvent 对象会作为参数传递给绑定在 request.result 上的 onversionchange事件处理函数，然后创建该版本需要的对象仓库（object store）。
+
+```js
+// 该事件仅在较新的浏览器中实现了
+request.onupgradeneeded = function(event) {
+  // 保存 IDBDataBase 接口
+  const db = event.target.result;
+
+  // 为该数据库创建一个对象仓库
+  const objectStore = db.createObjectStore("name", { keyPath: "myKey" });
+};
+```
+
+**构建数据库**
+
+IndexedDB 使用对象存仓库而不是表，并且一个单独的数据库可以包含任意数量的对象存储空间。每当一个值被存储进一个对象存储空间时，它会被和一个键相关联。
+
+键的提供可以有几种不同的方法，这取决于对象存储空间是使用 key path键路径 还是 key generator键生成器。
+
+还可以创建索引使用被存储的对象的属性的值来查找存储在对象存储空间的值，而不是用对象的键来查找。
+
+简单的例子：
+
+```js
+// 客户数据
+const customerData = [
+  { ssn: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
+  { ssn: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
+];
+
+
+// indexedDB存储数据
+const dbName = "the_name";
+
+var request = indexedDB.open(dbName, 2);
+
+request.onerror = function(event) {
+  // 错误处理
+};
+request.onupgradeneeded = function(event) {
+  var db = event.target.result;
+
+  // 建立一个对象仓库来存储客户的相关信息，选择 ssn 作为键路径（key path）
+  // 因为 ssn 可以保证是不重复的
+  var objectStore = db.createObjectStore("customers", { keyPath: "ssn" });
+
+  // 建立一个索引来通过姓名来搜索客户。名字可能会重复，所以不能使用 unique 索引
+  objectStore.createIndex("name", "name", { unique: false });
+
+  // 使用邮箱建立索引，客户的邮箱不会重复，所以使用 unique 索引
+  objectStore.createIndex("email", "email", { unique: true });
+
+  // 使用事务的 oncomplete 事件确保在插入数据前对象仓库已经创建完毕
+  objectStore.transaction.oncomplete = function(event) {
+    // 将数据保存到新创建的对象仓库
+    var customerObjectStore = db.transaction("customers", "readwrite").objectStore("customers");
+    customerData.forEach(function(customer) {
+      customerObjectStore.add(customer);
+    });
+  };
+};
+```
+
+**使用键生成器**
+
+在创建对象仓库时设置 autoIncrement 标记会为该仓库开启键生成器。
+
+```js
+// 打开 indexedDB.
+var request = indexedDB.open(dbName, 3);
+
+request.onupgradeneeded = function (event) {
+
+    var db = event.target.result;
+
+    // 设置 autoIncrement 标志为 true 来创建一个名为 names 的对象仓库
+    var objStore = db.createObjectStore("names", { autoIncrement : true });
+
+    // 因为 names 对象仓库拥有键生成器，所以它的键会自动生成。
+    // 被插入的数据可以表示如下：
+    // key : 1 => value : "Bill"
+    // key : 2 => value : "Donna"
+    customerData.forEach(function(customer) {
+        objStore.add(customer.name);
+    });
+};
+```
+
+**增加、读取和删除数据**
+
+开启一个事务才能对创建的数据库进行操作。事务来自于数据库对象，而且必须指定这个事务跨越哪些对象仓库。处于一个事务中，就可以对目标对象仓库发出请求。事务提供了三种模式：readonly、readwrite 和 versionchange。
+
+想要修改数据库模式或结构——包括新建或删除对象仓库或索引，只能在 versionchange 事务中才能实现。该事务由一个指定了 version 的 IDBFactory.open 方法启动。
+
+readonly 或 readwrite 模式都可以从已存在的对象仓库里读取记录。但只有在 readwrite 事务中才能修改对象仓库。使用 IDBDatabase.transaction启动一个事务。该方法接受两个参数：storeNames (作用域，想访问的对象仓库的数组），事务模式 mode（readonly 或 readwrite）。该方法返回一个包含 IDBIndex.objectStore方法的事务对象，使用 IDBIndex.objectStore可以访问你的对象仓库。
+
+```js
+var objectStore = db.transaction(["customers"], "readwrite").objectStore("customers");
+// 增删改查
+objectStore.add(item)
+objectStore.delete(item)
+objectStore.put(item)
+objectStore.get(item)
+```
+
+**游标、索引**
+使用游标遍历对象存储空间中的所有值
+使用游标的常见模式是提取出在一个对象存储空间中的所有对象然后把它们添加到一个数组中
+
+```js
+var customers = [];
+
+objectStore.openCursor().onsuccess = function(event) {
+  var cursor = event.target.result;
+  if (cursor) {
+    customers.push(cursor.value);
+    cursor.continue();
+  }
+  else {
+    alert("以获取所有客户信息: " + customers);
+  }
+};
+```
+
+```js
+// 首先，确定已经在 request.onupgradeneeded 中创建了索引:
+// objectStore.createIndex("name", "name");
+
+var index = objectStore.index("name");
+
+index.get("Donna").onsuccess = function(event) {
+  alert("Donna's SSN is " + event.target.result.ssn);
+};
+```
 
 ## javaScript promise 、类
 
@@ -1288,448 +1837,223 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
 
 ```
 
-
 ### 类
 
-类是用于创建对象的模板，JS中的类建立在原型上，但是也有某些语法和语义未与ES5类相似语义共享。
-
-### 定义类
-
-类语法有两个组成部分：类表达式和声明。
-
-### 类声明
-定义类的一种方法是使用类声明。声明一个类，可以使用带有class关键字的类名
-
-```js
-class rectangle {
-    constructor(height, width) {
-        this.height = height;
-        this.width = width;
-    }
-}
-```
-类声明没有提升，必须先声明类，然后才能访问它。
-
-类表达式是定义类的另一种方法。类表达式可以命名或不命名，命名类表达式的名称是该类体的局部名称。
-
-```js
-// 未命名/匿名类
-let Rectangle = class {
-  constructor(height, width) {
-    this.height = height;
-    this.width = width;
-  }
-};
-console.log(Rectangle.name);
-// output: "Rectangle"
-
-// 命名类
-let Rectangle = class Rectangle2 {
-  constructor(height, width) {
-    this.height = height;
-    this.width = width;
-  }
-};
-console.log(Rectangle.name);
-// 输出: "Rectangle2"
-```
-
-### 类体和方法定义
-
-一个类体是一对`{}`中的部分，这是定义类成员的位置，如方法或构造函数。类声明和类表达式的主体都执行在严格模式下。
-
-构造函数。constructor方法是一个特殊的方法，用于创建和初始化由class创建的对象。一个类只能拥有一个名为constructor的特殊方法，如果类包含多个constructor方法，则会抛出一个syntaxError。一个构造函数可以使用super关键字来调用一个父类的构造函数。
-
-```js
-class rectangle {
-    // constructor
-    constructor(height, width) {
-        this.height = height;
-        this.width = widht;
-    }
-    // Getter
-    get area() {
-        return this.clacArea()
-    }
-    // Method
-    calcArea() {
-        return this.height * this.width;
-    }
-}
-const square = new rectangle(10,10)
-```
-
-### 静态方法
-static关键字用来定义一个类的一个静态方法。调用静态方法不需要实例化该类，但不能通过一个类实例调用静态方法，静态方法通常用于为一个应用程序创建工具函数。
-```js
-class Point {
-    construct(x,y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    static distance(a,b) {
-        const dx = a.x - b.x;
-        const dy = a.y - b.y;
-        return Math.hypot(dx, dy)
-    }
-}
-
-const p1 = new Point(5, 5);
-
-p1.distance;
-// undefined
-
-console.log(Point.distance(p1, p2));
-// 7.0710678118654755
-```
-
-### 用原型和静态方法绑定this
-
-当调用静态或原型方法时没有指定this的值，那么方法内的this值将被置为`undefined`。
-
-```js
-class Animal {
-    speak() {
-        return this;
-    }
-    static eat() {
-        return this;
-    }
-}
-
-let obj = new Animal();
-obj.speak(); // Animal{}
-let speak = obj.speak;
-speak(); // undifined
-
-Animal.eat(); // Animal{}
-let eat = Animal.eat;
-eat(); // undifined
-```
-
-如果上述代码通过传统的基于函数的语法来实现，那么依据初始的this值，在非严格模式下调用会发生自动装箱。若初始值是`undefined`，this值会被设为全局对象。
-
-```js
-function Animal() { }
-
-Animal.prototype.speak = function() {
-  return this;
-}
-
-Animal.eat = function() {
-  return this;
-}
-
-let obj = new Animal();
-let speak = obj.speak;
-speak(); // global object
-
-let eat = Animal.eat;
-eat(); // global object
-```
-
->类的方法内部如果含有this，它默认指向类的实例。但是，将方法提取出来单独使用，this会指向该方法运行时所在的环境，会因为找不到方法而导致报错。
-
-实例属性必须定义在类的方法里：
-```js
-class Rectangle {
-  constructor(height, width) {    
-    this.height = height;
-    this.width = width;
-  }
-}
-```
-静态的或原型的数据属性必须定义在类定义的外面。
-```js
-Rectangle.staticWidth = 20;
-Rectangle.prototype.prototypeWidth = 25;
-```
-
-### 字段声明
-
-公有字段。通过预先声明字段，类定义变得更加自我记录，并且字段始终存在。
-
-```js
-class Rectangle {
-  height = 0;
-  width;
-  constructor(height, width) {    
-    this.height = height;
-    this.width = width;
-  }
-}
-```
-
-私有字段。私有字段只能在类里读取或写入，从外部引用私有字段是错误的。
-
-```js
-class Rectangle {
-  #height = 0;
-  #width;
-  constructor(height, width) {    
-    this.#height = height;
-    this.#width = width;
-  }
-}
-```
-### extends 扩展子类
-extends 关键字在 类声明或类表达式中用于创建类的子类
-
-```js
-class Animal { 
-  constructor(name) {
-    this.name = name;
-  }
-  
-  speak() {
-    console.log(`${this.name} makes a noise.`);
-  }
-}
-
-class Dog extends Animal {
-  constructor(name) {
-    super(name); // 调用超类构造函数并传入name参数
-  }
-
-  speak() {
-    console.log(`${this.name} barks.`);
-  }
-}
-
-const d = new Dog('Mitzie');
-d.speak();// 'Mitzie barks.'
-```
-如果子类中定义了构造函数，那么它必须先调用 super() 才能使用this。
-也可以继承传统的基于函数的类:
-
-```js
-function Animal (name) {
-  this.name = name;  
-}
-Animal.prototype.speak = function () {
-  console.log(this.name + ' makes a noise.');
-}
-
-class Dog extends Animal {
-  speak() {
-    super.speak();
-    console.log(this.name + ' barks.');
-  }
-}
-
-var d = new Dog('Mitzie');
-d.speak();//Mitzie makes a noise.  Mitzie barks.
-```
-注意，类不能继承常规对象(不可构造)。如果要继承常规对象，可以改用`Object.setPrototypeOf()`
-
-```js
-var Animal = {
-  speak() {
-    console.log(this.name + ' makes a noise.');
-  }
-};
-
-class Dog {
-  constructor(name) {
-    this.name = name;
-  }
-}
-
-Object.setPrototypeOf(Dog.prototype, Animal);// 如果不这样做，在调用speak时会返回TypeError
-
-var d = new Dog('Mitzie');
-d.speak(); // Mitzie makes a noise.
-```
-### super调用超类
-
-super关键字用于调用对象的父对象的函数
-
-```js
-class Cat { 
-  constructor(name) {
-    this.name = name;
-  }
-  
-  speak() {
-    console.log(this.name + ' makes a noise.');
-  }
-}
-
-class Lion extends Cat {
-  speak() {
-    super.speak();
-    console.log(this.name + ' roars.');
-  }
-}
-```
-
-### 公有字段
-
->公有（public）和私有（private）字段声明是一个JavaScript标准委员会TC39提议的试验性功能 （第3阶段）。
-
-静态公有字段和实例公有字段都是可编辑的，可遍历的，可配置的，它们参与原型的继承。
-
-静态公有字段使用关键字 static 声明，在声明一个类的时候，使用Object.defineProperty方法将静态公有字段添加到类的构造函数中，类被声明后，可以从类的构造函数访问静态公有字段。
-
-```js
-class ClassWithStaticField {
-  static staticField = 'static field';
-}
-
-console.log(ClassWithStaticField.staticField);
-// 预期输出值: "static field"​
-
-
-// 没有设定初始化程序的字段将默认被初始化为'undefined'
-class ClassWithStaticField {
-  static staticField;
-}
-
-console.assert(ClassWithStaticField.hasOwnProperty('staticField'));
-console.log(ClassWithStaticField.staticField);
-// 预期输出值: "undefined"
-```
-
-静态公有字段不会在子类里重复初始化，但可以通过原型链访问它们。
-
-```js
-class ClassWithStaticField {
-  static baseStaticField = 'base field';
-}
-
-class SubClassWithStaticField extends ClassWithStaticField {
-  static subStaticField = 'sub class field';
-}
-
-console.log(SubClassWithStaticField.subStaticField);
-// 预期输出值: "sub class field"
-
-console.log(SubClassWithStaticField.baseStaticField);
-// 预期输出值: "base field"
-```
-
-公有实例字段可以在基类的构造过程中(构造函数主体运行前)使用`Object.defineProperty`添加，也可以在子类构造函数中的super()函数结束后添加
-
-```js
-class ClassWithInstanceField {
-  instanceField = 'instance field';
-}
-
-const instance = new ClassWithInstanceField();
-console.log(instance.instanceField);
-// 预期输出值: "instance field"
-```
-
-当初始化字段时，this指向的是类正在构造中的实例。可以在子类中使用super来访问超类的原型。
-
-```js
-class ClassWithInstanceField {
-  baseInstanceField = 'base field';
-  anotherBaseInstanceField = this.baseInstanceField;
-  baseInstanceMethod() { return 'base method output'; }
-}
-
-class SubClassWithInstanceField extends ClassWithInstanceField {
-  subInstanceField = super.baseInstanceMethod();
-}
-
-const base = new ClassWithInstanceField();
-const sub = new SubClassWithInstanceField();
-
-console.log(base.anotherBaseInstanceField);
-// 预期输出值: "base field"
-
-console.log(sub.subInstanceField);
-// 预期输出值: "base method output"
-```
-
-### 公共方法
-静态公共方法，关键字static将为一个类定义一个静态方法。静态方法不会在实例中被调用，而只会被类本身调用，它们经常是工具函数
-
-```js
-class ClassWithStaticMethod {
-
-  static staticProperty = 'someValue';
-  static staticMethod() {
-    return 'static method has been called.';
-  }
-
-}
-
-console.log(ClassWithStaticMethod.staticProperty);
-// output: "someValue"
-console.log(ClassWithStaticMethod.staticMethod());
-// output: "static method has been called."
-```
-
-公共实例方法，是在类的赋值阶段用Object.defineProperty方法添加到类中的。
-
-```js
-class ClassWithPublicInstanceMethod {
-  publicMethod() {
-    return 'hello world';
-  }
-}
-
-const instance = new ClassWithPublicInstanceMethod();
-console.log(instance.publicMethod());
-// 预期输出值: "hello worl​d"
-```
-
-在实例的方法中，this指向的是实例本身，使用super访问到超类的原型，由此调用超类的方法。
-
-```js
-class BaseClass {
-  msg = 'hello world';
-  basePublicMethod() {
-    return this.msg;
-  }
-}
-
-class SubClass extends BaseClass {
-  subPublicMethod() {
-    return super.basePublicMethod();
-  }
-}
-
-const instance = new SubClass();
-console.log(instance.subPublicMethod());
-// 预期输出值: "hello worl​d"
-```
-
-getter和setter是和类的属性绑定的特殊方法，分别会在其绑定的属性被取值、赋值时调用。使用get和set句法定义实例的公共getter和setter。
-
-```js
-class ClassWithGetSet {
-  msg = 'hello world';
-  get msg() {
-    return this.msg;
-  }
-  set msg(x) {
-    this.msg = `hello ${x}`;
-  }
-}
-
-const instance = new ClassWithGetSet();
-console.log(instance.msg);
-// expected output: "hello worl​d"
-
-instance.msg = 'cake';
-console.log(instance.msg);
-// 预期输出值: "hello cake"
-```
-
-
-
-## 元编程
+### 元编程
 
 从ECMAScript 2015 开始，JavaScript 获得了 Proxy 和 Reflect 对象的支持，允许拦截并定义基本语言操作的自定义行为（例如，属性查找，赋值，枚举，函数调用等）。借助这两个对象，可以在 JavaScript 元级别进行编程。
-
 
 ---
 
 # JavaScript
+
+## 语法和数据类型
+
+区分大小写的，并使用 Unicode 字符集
+指令被称为语句 （Statement），并用分号（;）进行分隔。
+### 注释
+```js
+// 单行注释
+
+/* 这是一个更长的,
+   多行注释
+*/
+```
+
+### 变量声明
+
+在应用程序中，使用变量来作为值的符号名。变量的名字又叫做标识符，其需要遵守一定的规则。
+
+声明方式：
+var 声明一个变量，可选初始化一个值。
+let 声明一个块作用域的局部变量，可选初始化一个值。
+const 声明一个块作用域的只读常量。
+
+作用域：全局变量，局部变量
+
+变量提升
+
+函数提升
+
+### 常量
+关键字 const 创建一个只读的常量
+常量不可以通过重新赋值改变其值，也不可以在代码运行时重新声明。它必须被初始化为某个值。
+
+常量的作用域规则与 let 块级作用域变量相同。
+
+### 数据类型
+
+最新的 ECMAScript 标准定义了8种数据类型：
+
+* 7种基本数据类型:
+  - Boolean，布尔值，分别是：true 和 false.
+  - null，表明 null 值的特殊关键字。
+  - undefined，表示变量未赋值时的属性的特殊关键字。
+  - Number，数字：整数或浮点数
+  - BigInt，任意精度的整数
+  - String，字符串，表示文本值的字符序列。
+  - Symbol。
+
+* 对象（Object）。
+
+### 字面量
+
+字面量是由语法表达式定义的常量,通过字面量创建相对应数据类型的数据
+
+数组字面量(Array literals)    const a = []
+
+对象字面量(Object literals)   const a = {}
+
+RegExp literals              const regExp = /ab+c/  正则
+
+字符串字面量(String literals)   const a = '晕' 
+
+模板字面量（template literals） const b = `我${a}了`
+
+## 流程控制与错误处理
+
+### 条件判断
+
+if...else语句
+当一个逻辑条件为真，if语句执行一个语句。当这个条件为假，else从句执行语句。
+
+```text
+if (condition) {
+  statement_1;
+} else {
+  statement_2;
+}
+```
+false、undefined、null、0、NaN、空字符串（""）这些值计算为 false
+
+switch语句
+
+switch 语句允许一个程序求一个表达式的值并且尝试去匹配表达式的值到一个 case 标签。如果匹配成功，这个程序执行相关的语句。
+
+```text
+switch (expression) {
+   case label_1:
+      statements_1
+      [break;]
+   case label_2:
+      statements_2
+      [break;]
+   ...
+   default:
+      statements_def
+      [break;]
+}
+```
+
+### 异常处理语句
+
+throw 语句抛出一个异常并且用 try...catch 语句捕获处理它。
+
+## 循环与迭代
+
+for 语句
+do...while 语句
+while 语句
+labeled 语句
+break 语句
+continue 语句
+for...in 语句
+for...of 语句
+
+for循环会一直重复执行，直到指定的循环条件为 false
+
+    for ([initialExpression]; [condition]; [incrementExpression])
+      statement
+
+do...while 语句一直重复直到指定的条件求值得到假值（false）
+
+    do
+      statement
+    while (condition);
+
+while 语句只要指定的条件求值为真（true）就会一直执行它的语句块
+
+    while (condition)
+      statement
+
+label 提供在程序中其他位置引用它的标识符
+
+    label :
+       statement
+
+break 语句来终止循环，switch，或者是链接到 label 语句
+
+continue 语句可以用来继续执行（跳过代码块的剩余部分并进入下一循环）一个 while、do-while、for，或者 label 语句。
+
+for...in 语句循环一个指定的变量来循环一个对象所有可枚举的属性。
+
+for...of 语句在可迭代对象（包括Array、Map、Set、arguments 等等）上创建了一个循环，对值的每一个独特属性调用一次迭代。
+
+## 函数
+
+JavaScript中，函数是执行任务或计算值的语句
+
+### 函数定义
+
+函数定义（也称为函数声明，或函数语句）由一系列的function关键字组成，依次为：
+
+函数的名称。
+函数参数列表，包围在括号中并由逗号分隔。
+定义函数的 JavaScript 语句，用大括号{}括起来。
+
+```js
+function square(number) {
+  return number * number;
+}
+```
+定义了函数仅仅是赋予函数以名称并明确函数被调用时该做些什么。调用函数才会以给定的参数真正执行这些动作。
+
+### 函数作用域
+
+函数内定义的变量不能在函数之外的任何地方访问
+
+调用自身的函数称之为递归函数。
+
+JavaScript 允许函数嵌套，并且内部函数可以访问定义在外部函数中的所有变量和函数，以及外部函数能访问的所有变量和函数。
+
+### 闭包
+
+当内部函数以某一种方式被任何一个外部函数作用域访问时，一个闭包就产生了
+
+```js
+var pet = function(name) {          //外部函数定义了一个变量"name"
+  var getName = function() {
+    //内部函数可以访问 外部函数定义的"name"
+    return name;
+  }
+  //返回这个内部函数，从而将其暴露在外部函数作用域
+  return getName;
+};
+myPet = pet("Vivie");
+
+myPet();                            // 返回结果 "Vivie"
+```
+
+函数的实际参数会被保存在一个类似数组的arguments对象中
+
+从ECMAScript 6开始，有两个新的类型的参数：默认参数，剩余参数。
+
+默认参数给定参数默认值
+剩余参数允许将不确定数量的参数表示为数组
+
+```js
+function multiply(multiplier = 2, ...theArgs) {
+  return theArgs.map(x => multiplier * x);
+}
+
+var arr = multiply(, 1, 2, 3);
+console.log(arr); // [2, 4, 6]
+```
+
+箭头函数 () => {}  this指向上一级作用域
+
+## 表达式和运算符
+
 
 ## 对象原型
 
@@ -2270,277 +2594,4 @@ let han = new Person('Han', 'Solo', 25, 'male', ['Smuggling']);
 // 实例调用
 han.greeting().then(console.log);
 ```
-
-## Web API
-
-### 什么是API
-应用程序接口（API，Application Programming Interface）是基于编程语言构建的结构，使开发人员更容易地创建复杂的功能。它们抽象了复杂的代码，并提供一些简单的接口规则直接使用。
-
-比如说，编程来显示一些3D图形，使用以更高级语言编写的API（例如JavaScript或Python）将会比直接编写直接控制计算机的GPU或其他图形功能的低级代码（比如C或C++）来执行操作要容易得多。
-
-### 客户端JavaScript中的API
-
-客户端JavaScript中有很多可用的API — 它们本身并不是JavaScript语言的一部分，却建立在JavaScript语言核心的顶部，为使用JavaScript代码提供额外的超强能力。通常分为两类：
-
-* 浏览器API内置于Web浏览器中，能从浏览器和电脑周边环境中提取数据，并用来做有用的复杂的事情 。
-
-* 第三方API缺省情况下不会内置于浏览器中，通常必须在Web中的某个地方获取代码和信息。
-
-
-### 常见浏览器API
-
-* 操作文档的API，内置于浏览器中。最明显的例子是DOM（文档对象模型）API，它操作HTML和CSS — 创建、移除以及修改HTML，动态地将新样式应用到您的页面，等等。
-
-* 从服务器获取数据的API，用于更新网页的一小部分。API包括XMLHttpRequest和Fetch API。
-* 用于绘制和操作图形的API，目前已被浏览器广泛支持 — 最流行的是以编程方式更新包含在HTML`<canvas>`元素中的像素数据以创建2D和3D场景的Canvas和WebGL。
-
-* 音频和视频API。例如HTMLMediaElement，Web Audio API和WebRTC使用多媒体来做一些非常有趣的事情，比如创建用于播放音频和视频的自定义UI控件，显示字幕视频，从网络摄像机抓取视频，通过画布操纵（见上），或在网络会议中显示在别人的电脑上，或者添加效果到音轨（如增益，失真，平移等） 。
-
-* 设备API，基本上是以对网络应用程序有用的方式操作和检索现代设备硬件中的数据的API。比如访问设备位置数据的地理定位API，可以在地图上标注位置。还包括通过系统通知（Notifications API）或振动硬件（Vibration API）告诉用户Web应用程序有用的更新可用。
-
-* 客户端存储API，如果想创建一个应用程序来保存页面加载之间的状态，甚至让设备在处于脱机状态时可用，那么在客户端存储数据非常有用。例如使用Web Storage API的简单的键 - 值存储以及使用IndexedDB API的更复杂的表格数据存储
-
-### API 如何工作
-
-**基于对象**
-
-例：Geolocation API  由几个简单的对象组成
-
-* Geolocation, 其中包含三种控制地理数据检索的方法
-
-* Position, 表示在给定的时间的相关设备的位置。 — 它包含一个当前位置Coordinates 对象。还包含了一个时间戳,这个时间戳表示获取到位置的时间。
-
-* Coordinates, 其中包含有关设备位置的大量有用数据，包括经纬度，高度，运动速度和运动方向等。
-
-示例：
-
-```js
-navigator.geolocation.getCurrentPosition(function(position) {
-  var latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-  var myOptions = {
-    zoom: 8,
-    center: latlng,
-    mapTypeId: google.maps.MapTypeId.TERRAIN,
-    disableDefaultUI: true
-  }
-  var map = new google.maps.Map(document.querySelector("#map_canvas"), myOptions);
-});
-```
-
-首先要使用 Geolocation.getCurrentPosition() 方法返回设备的当前位置。浏览器的 Geolocation 对象通过调用 Navigator.geolocation 属性来访问.
-
-Geolocation.getCurrentPosition() 方法只有一个必须的参数，这个参数是一个匿名函数，当设备的当前位置被成功取到时，这个函数会运行。 这个函数本身有一个参数，它包含一个表示当前位置数据的 Position 对象。
-
-将Geolocation API与第三方API（Google Maps API）相结合， — 使用它绘制Google地图上由 getCurrentPosition()返回的位置。
-
-引入第三方API
-
-    <script type="text/javascript" src="https://maps.google.com/maps/API/js?key=AIzaSyDDuGt0E5IEGkcE6ZfrKfUtE9Ko_de66pA"></script>
-
-使用该API 
-
-首先使用google.maps.LatLng()构造函数创建一个LatLng对象实例， 该构造函数需要地理定位 Coordinates.latitude 和 Coordinates.longitude值作为参数
-
-    var latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-
-该对象实例被设置为 myOptions对象的center属性的值。然后通过调用google.maps.Map()构造函数创建一个对象实例来表示我们的地图， 并传递它两个参数 — 一个参数要渲染地图的 div元素的引用(ID为 map_canvas), 另一个参数是定义的myOptions对象
-
-```js
-var myOptions = {
-  zoom: 8,
-  center: latlng,
-  mapTypeId: google.maps.MapTypeId.TERRAIN,
-  disableDefaultUI: true
-}
-
-var map = new google.maps.Map(document.querySelector("#map_canvas"), myOptions);
-```
-
-地图呈现。
-
-**可识别的入口点**
-
-使用API时，应确保知道API入口点的位置。
-
-Geolocation API中是 Navigator.geolocation 属性, 它返回浏览器的 Geolocation 对象，所有有用的地理定位方法都可用。
-
-文档对象模型 (DOM) API，它往往挂在 Document 对象, 或任何想影响的HTML元素的实例
-
-```js
-var em = document.createElement('em'); // create a new em element
-var para = document.querySelector('p'); // reference an existing p element
-em.textContent = 'Hello there!'; // give em some text content
-para.appendChild(em); // embed em inside para
-```
-
-具有稍微复杂的入口点de API，通常涉及为要编写的API代码创建特定的上下文。
-
-例如：Canvas API的上下文对象是通过获取要绘制的`<canvas>`元素的引用来创建，然后调用它的HTMLCanvasElement.getContext()方法：
-
-```js
-var canvas = document.querySelector('canvas');
-var ctx = canvas.getContext('2d');
-
-Ball.prototype.draw = function() {
-  ctx.beginPath();
-  ctx.fillStyle = this.color;
-  ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-  ctx.fill();
-};
-```
-
-然后通过调用内容对象ctx的属性和方法实现想对画布进行的任何操作
-
-**使用事件处理状态的变化**
-
-例如：XMLHttpRequest 对象，它的实例代表一个到服务器的HTTP请求,来取得某种新的资源。onload事件在成功返回时触发包含请求的资源
-
-```js
-var requestURL = 'https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json';
-var request = new XMLHttpRequest();
-request.open('GET', requestURL);
-request.responseType = 'json';
-request.send();
-
-request.onload = function() {
-  var superHeroes = request.response;
-  populateHeader(superHeroes);
-  showHeroes(superHeroes);
-}
-```
-
-指定获取的资源的位置，使用XMLHttpRequest() 构造函数创建请求对象的新实例，打开HTTP 的 GET 请求以取得指定资源，指定响应以JSON格式发送，然后发送请求。
-
-然后 onload 处理函数指定如何处理响应。
-
-**适当的地方有额外的安全机制**
-
-WebAPI功能受到与JavaScript和其他Web技术（例如同源政策）相同的安全考虑限制，但是有的API会有额外的安全机制。
-
-比如权限启用请求，通知许可等
-
-## 操作文档
-
-下图表表示直接出现在web页面视图中的浏览器的主要部分：
-
-![](https://mdn.mozillademos.org/files/14557/document-window-navigator.png)
-
-* window是载入浏览器的标签，在JavaScript中用Window对象来表示，使用这个对象可以返回窗口的大小（Window.innerWidth和Window.innerHeight），操作载入窗口的文档，存储客户端上文档的特殊数据（例如使用本地数据库或其他存储设备），为当前窗口绑定event handler，等等。
-* navigator表示浏览器存在于web上的状态和标识（即用户代理）。在JavaScript中，用Navigator来表示,可以用这个对象获取一些信息，比如来自用户摄像头的地理信息、用户偏爱的语言、多媒体流等等。
-* document（浏览器中用DOM表示）是载入窗口的实际页面，在JavaScript中用Document 对象表示，可以用这个对象来返回和操作文档中HTML和CSS上的信息。
-
-### 文档对象模型 DOM
-
-在浏览器标签中当前载入的文档用文档对象模型来表示。是一个由浏览器生成的“树结构”，使编程语言可以很容易的访问HTML结构
-
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Simple DOM example</title>
-  </head>
-  <body>
-      <section>
-        <img src="dinosaur.png" alt="A red Tyrannosaurus Rex: A two legged dinosaur standing upright like a human, with small arms, and a large head with lots of sharp teeth.">
-        <p>Here we will add a link to the <a href="https://www.mozilla.org/">Mozilla homepage</a></p>
-      </section>
-  </body>
-</html>
-```
-
-DOM 树
-
-![DOM树](https://mdn.mozillademos.org/files/14559/dom-screenshot.png)
-
-元素节点: 一个元素，存在于DOM中。
-根节点: 树中顶层节点，在HTML的情况下，总是一个HTML节点
-子节点: 直接位于另一个节点内的节点
-后代节点: 位于另一个节点内任意位置的节点。
-父节点: 里面有另一个节点的节点。
-兄弟节点: DOM树中位于同一等级的节点。
-文本节点: 包含文字串的节点
-
-***引用选择节点**
-
-Document.querySelector()
-Document.querySelectorAll()
-Document.getElementById()
-Document.getElementsByTagName()
-
-**创建节点**
-
-Document.createElement() 元素节点
-Document.createTextNode() 文本节点
-
-**添加、删除节点**
-
-node.appendChild(otherNode) 添加节点
-
-node.removeChild(otherNode) 删除节点
-或者 otherNode.parentNode.removeChild(otherNode) 
-
-**操作样式**
-
-HTMLElement.style 属性，包含文档中每个元素的内联样式信息。可以设置这个对象的属性直接修改元素样式。
-
-```js
-para.style.color = 'white';
-para.style.backgroundColor = 'black';
-para.style.padding = '10px';
-para.style.width = '250px';
-para.style.textAlign = 'center';
-```
-
-或者使用Element.setAttribute()设置属性
-它有两个参数，想在元素上设置的属性，为它设置的值。
-
-    para.setAttribute('class', 'highlight');
-
-
-## 从服务器获取数据
-
-### Ajax  
-Asynchronous JavaScript and XML，允许网页直接处理对服务器上可用的特定资源的 HTTP 请求，并在显示之前根据需要对结果数据进行格式化。早期，它倾向于使用XMLHttpRequest 来请求XML数据，现在，使用 XMLHttpRequest 或 Fetch 来请求JSON, 结果是一样的，术语“Ajax”仍然常用于描述这种技术。
-
-![Ajax](https://mdn.mozillademos.org/files/6477/moderne-web-site-architechture@2x.png)
-
-Ajax模型涉及使用 Web API 作为代理来更智能地请求数据，而不仅仅是让浏览器重新加载整个页面。
-
-为了进一步加快速度，一些站点还在用户第一次请求时将资产和数据存储在用户的计算机上，意味着在随后的访问中，使用本地版本而不是每次首次加载页面时下载新副本。内容仅在更新后才从服务器重新加载。
-
-![](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data/web-app-architecture@2x.png)
-
-简单示例：
-
-XMLHttpRequest
-
-```js
-let request = new XMLHttpRequest();
-request.open('GET', url);
-request.responseType = 'text';
-
-request.onload = function() {
-  poemDisplay.textContent = request.response;
-};
-
-request.send();
-```
-
-Fetch
-
-```js
-fetch(url).then(function(response) {
-  if(response.ok) {
-    response.blob().then(function(blob) {
-      objectURL = URL.createObjectURL(blob);
-      showProduct(objectURL, product);
-    });
-  } else {
-    console.log('Network request for "' + product.name + '" image failed with response ' + response.status + ': ' + response.statusText);
-  }
-});
-```
-
-## 客户端存储
 
