@@ -1574,7 +1574,7 @@ index.get("Donna").onsuccess = function(event) {
 };
 ```
 
-## javaScript promise 、类
+## promise 、元编程
 
 ### promise
 
@@ -1837,13 +1837,165 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
 
 ```
 
-### 类
-
-### 元编程
+## 元编程
 
 从ECMAScript 2015 开始，JavaScript 获得了 Proxy 和 Reflect 对象的支持，允许拦截并定义基本语言操作的自定义行为（例如，属性查找，赋值，枚举，函数调用等）。借助这两个对象，可以在 JavaScript 元级别进行编程。
 
+### Proxy  代理
+
+Proxy 对象用于创建一个对象的代理，从而实现基本操作的拦截和自定义（如属性查找、赋值、枚举、函数调用等）。
+
+```js
+const handler = {
+    get: function(obj, prop) {
+        return prop in obj ? obj[prop] : 37;
+    }
+};
+
+const p = new Proxy({}, handler);
+p.a = 1;
+p.b = undefined;
+
+console.log(p.a, p.b);      // 1, undefined
+console.log('c' in p, p.c); // false, 37
+```
+
+术语:
+
+handler
+包含捕捉器 trap 的占位符对象，可译为处理器对象。
+traps
+提供属性访问的方法。这类似于操作系统中捕获器的概念。
+target
+代理虚拟化的对象。被 Proxy 代理虚拟化的对象。它常被作为代理的存储后端。根据目标验证关于对象不可扩展性或不可配置属性的不变量（保持不变的语义）。
+
+**语法**
+
+    const p = new Proxy(target, handler)
+
+target
+要使用 Proxy 包装的目标对象（可以是任何类型的对象，包括原生数组，函数，甚至另一个代理）。
+handler
+一个通常以函数作为属性的对象，各属性中的函数分别定义了在执行各种操作时代理 p 的行为。
+Proxy.revocable()
+创建一个可撤销的Proxy对象。
+
+**handler对象的方法**
+handler 对象是一个容纳一批特定属性的占位符对象。它包含有 Proxy 的各个捕获器（trap）。
+handler.getPrototypeOf()
+handler.setPrototypeOf()
+handler.isExtensible()
+handler.preventExtensions()
+handler.getOwnPropertyDescriptor()
+handler.defineProperty()
+handler.has()  in 操作符的捕捉器。
+handler.get()  属性读取操作的捕捉器。
+handler.set()  属性设置操作的捕捉器。
+handler.deleteProperty()  delete 操作符的捕捉器。
+handler.ownKeys()
+handler.apply()   函数调用操作的捕捉器。
+handler.construct()  new 操作符的捕捉器。
 ---
+
+无操作转发代理
+
+```js
+let target = {};
+let p = new Proxy(target, {});
+
+p.a = 37;   // 操作转发到目标
+
+console.log(target.a);    // 37. 操作已经被正确地转发
+```
+
+验证
+
+```js
+// 通过代理，可以轻松地验证向一个对象的传值
+let validator = {
+  set: function(obj, prop, value) {
+    if (prop === 'age') {
+      if (!Number.isInteger(value)) {
+        throw new TypeError('The age is not an integer');
+      }
+      if (value > 200) {
+        throw new RangeError('The age seems invalid');
+      }
+    }
+
+    // The default behavior to store the value
+    obj[prop] = value;
+
+    // 表示成功
+    return true;
+  }
+};
+
+let person = new Proxy({}, validator);
+person.age = 100;
+console.log(person.age);
+// 100
+
+person.age = 'young';
+// 抛出异常: Uncaught TypeError: The age is not an integer
+
+person.age = 300;
+// 抛出异常: Uncaught RangeError: The age seems invalid
+```
+
+完整的 traps 列表示例
+
+```js
+var docCookies = new Proxy(docCookies, {
+  "get": function (oTarget, sKey) {
+    return oTarget[sKey] || oTarget.getItem(sKey) || undefined;
+  },
+  "set": function (oTarget, sKey, vValue) {
+    if (sKey in oTarget) { return false; }
+    return oTarget.setItem(sKey, vValue);
+  },
+  "deleteProperty": function (oTarget, sKey) {
+    if (sKey in oTarget) { return false; }
+    return oTarget.removeItem(sKey);
+  },
+  "enumerate": function (oTarget, sKey) {
+    return oTarget.keys();
+  },
+  "ownKeys": function (oTarget, sKey) {
+    return oTarget.keys();
+  },
+  "has": function (oTarget, sKey) {
+    return sKey in oTarget || oTarget.hasItem(sKey);
+  },
+  "defineProperty": function (oTarget, sKey, oDesc) {
+    if (oDesc && "value" in oDesc) { oTarget.setItem(sKey, oDesc.value); }
+    return oTarget;
+  },
+  "getOwnPropertyDescriptor": function (oTarget, sKey) {
+    var vValue = oTarget.getItem(sKey);
+    return vValue ? {
+      "value": vValue,
+      "writable": true,
+      "enumerable": true,
+      "configurable": false
+    } : undefined;
+  },
+});
+
+/* Cookies 测试 */
+
+alert(docCookies.my_cookie1 = "First value");
+alert(docCookies.getItem("my_cookie1"));
+
+docCookies.setItem("my_cookie1", "Changed value");
+alert(docCookies.my_cookie1);
+```
+
+### Reflect 映射
+
+Reflect 是一个内置的对象，它提供拦截 JavaScript 操作的方法，与proxy handlers的方法相同。
+
+Reflect 有助于将默认操作从处理程序转发到目标。
 
 # JavaScript
 
@@ -2054,6 +2206,94 @@ console.log(arr); // [2, 4, 6]
 
 ## 表达式和运算符
 
+解构赋值
+
+    var foo = ["one", "two", "three"];
+    var [one, two, three] = foo;
+
+短路求值
+
+false && anything    // 被短路求值为false
+true || anything       // 被短路求值为true
+
+delete操作符，删除一个对象的属性或者一个数组中某一个键值。
+
+    delete objectName.property;
+    delete objectName[index];
+
+typeof 操作符返回一个表示 operand 类型的字符串值。operand 可为字符串、变量、关键词或对象，其类型将被返回。
+
+void运算符,表明一个运算没有返回值。expression是javaScript表达式，括号中的表达式是一个可选项
+
+in操作符，如果所指定的属性确实存在于所指定的对象中，则会返回true
+propNameOrNumber in objectName
+
+instanceof操作符 如果所判别的对象确实是所指定的类型，则返回true
+objectName instanceof objectType
+
+this关键字被用于指代当前的对象
+
+可以使用new operator 创建一个自定义类型或者是预置类型的对象实例
+
+var objectName = new objectType([param1, param2, ..., paramN]);
+
+扩展语句符允许一个表达式在原地展开， 当需要多个参数 (比如函数调用时) 或者多个值(比如字面量数组)
+
+    function f(x, y, z) { }
+    var args = [0, 1, 2];
+    f(...args);
+
+
+## 内置对象
+
+Number 数字对象
+
+Math 数学对象  有代表数学操作的一些方法
+
+Date
+
+创建一个日期对象：
+    
+    var dateObjectName = new Date([parameters]);
+
+"set" 方法, 用于设置Date对象的日期和时间的值。
+"get" 方法,用于获取Date对象的日期和时间的值。
+"to" 方法,用于返回Date对象的字符串格式的值。
+parse 和UTC 方法, 用于解析Date字符串。
+
+String 字符串对象
+
+indexOf，lastIndexOf，startsWith, endsWith, includes，concat，split，slice，match，replace, search，trim
+
+Intl 对象是ECMAScript国际化API的命名空间, 它提供了语言敏感的字符串比较，数字格式化和日期时间格式化功能.  Collator, NumberFormat, 
+
+
+和 DateTimeFormat 对象的构造函数是Intl对象的属性.
+
+Array 数组对象
+
+forEach(callback[, thisObject]) 在数组每个元素项上执行callback
+
+map(callback[, thisObject]) 在数组的每个单元项上执行callback函数，并把返回包含回调函数返回值的新数组
+
+filter(callback[, thisObject]) 返回一个包含所有在回调函数上返回为true的元素的新数组，callback在这里担任的是过滤器的角色，当元素符合条件，过滤器就返回true，而filter则会返回所有符合过滤条件的元素
+
+every(callback[, thisObject]) 当数组中每一个元素在callback上被返回true时就返回true，它的功能是判断是不是数组中的所有元素都符合条件，并且返回的是布尔值
+
+类型化数组
+
+类型数组被分解为缓冲(Buffer)和视图(views)。缓冲(由ArrayBuffer 实现)是代表数据块的对象，它没有格式可言，并没有提供任何机制来访问其内容。为了访问包含在缓冲区中的内存，需要使用视图。视图提供了一个上下文，即数据类型、起始偏移量和元素数，这些元素将数据转换为实际类型数组。
+
+Map对象 Set集合
+
+Object 对象
+
+枚举对象的属性
+for...in 循环  该方法依次访问一个对象及其原型链中所有可枚举的属性。
+Object.keys(o)  该方法返回对象 o 自身包含（不包括原型中）的所有可枚举属性的名称的数组。
+Object.getOwnPropertyNames(o)  该方法返回对象 o 自身包含（不包括原型中）的所有属性(无论是否可枚举)的名称的数组。
+
+New 构造函数  Object.create()
 
 ## 对象原型
 
@@ -2067,9 +2307,17 @@ some.__proto__访问原型对象，some.prototype定义可被继承的属性或�
 
 每个实例对象都从原型中继承了一个constructor属性，该属性指向了用于构造此实例对象的构造函数。
 
+new 操作符创建了一个新的对象，并将其 __proto__ 属性设置为 Engineer.prototype。
+new 操作符将该新对象作为 this 的值传递给 Engineer 构造函数。
+
 ## 类
 
+类是用于创建对象的模板。 JS中的类建立在原型上
+
+定义类：类声明，类表达式
+
 ```js
+// 类声明
 class Person {
   constructor(first, last, age, gender, interests) {
     this.name = {
@@ -2094,6 +2342,41 @@ class Person {
 class声明生成一个新的类，块代码定义了类的特性：
 * constructor()方法定义代表Person类的构造函数。
 * greeting()和farewell()是类方法。在构造函数之后定义与类关联的方法。
+
+
+类表达式可以命名或不命名
+
+    let Rectangle1 = class Rectangle {
+      // 构造函数
+      constructor() {}
+    };
+
+
+类声明和类表达式的主体都执行在严格模式下。比如，构造函数，静态方法，原型方法，getter和setter都在严格模式下执行。
+
+static 关键字用来定义一个类的一个静态方法，静态方法通常用于为一个应用程序创建工具函数。
+
+字段声明：公有字段声明，私有字段声明
+
+公共和私有字段声明是JavaScript标准委员会TC39提出的实验性功能（第3阶段）
+
+```js
+class Rectangle {
+  // 公有字段
+  height = 0;
+  width;
+  // 私有字段
+  #weight = 120;
+  #age
+  constructor(height, width, weight, age) {
+    this.height = height;
+    this.width = width;
+    this.#weight = weight;
+    this.#age = age;
+  }
+}
+```
+
 
 ### 实例化对象实例 
 
