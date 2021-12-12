@@ -22,6 +22,13 @@ Vue.createApp({})
     .directive('focus',FocusDirective)
     .use(localePlugin)
 ```
+对比 vue2
+一个 Vue 应用由一个通过 new Vue 创建的根 Vue 实例
+```js
+new Vue({
+  render: h => h(App)
+}).$mount("#app");
+```
 
 ## 根组件
 
@@ -64,7 +71,7 @@ const vm = app.mount('#app')
 console.log(vm.count) // => 4
 ```
 还有各种其他的组件选项可以将用户定义的property添加到组件实例中， 例如methos,props,computed,inject和setup。组件中的所有property，无论如何定义，都可以在组件的模板中访问。
-vue还通过组件实例暴露了一些内置property，如$attrs和$emit，这些property都有一个$前缀，以避免与用户定义的property名冲突。
+vue还通过组件实例暴露了一些内置property，如 `$attrs` 和 `$emit`，这些 property 都有一个$前缀，以避免与用户定义的property名冲突。
 
 ## 生命周期钩子
 
