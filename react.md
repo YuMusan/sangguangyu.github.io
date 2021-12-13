@@ -208,6 +208,12 @@ componentWillUnmount()
 
 通过箭头函数和 Function.prototype.bind
 
+### 状态提升
+
+传递给子组件函数
+子组件接收函数并共享state
+父组件即可同步子组件state，并在所传递的函数内处理state
+
 ### 条件渲染
 
 使用 JavaScript 运算符 if 或者条件运算符去创建元素来表现当前的状态，然后让 React 根据它们来更新 UI。
