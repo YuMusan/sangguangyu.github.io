@@ -247,6 +247,36 @@ export function dataProcessing(matchedParam, incomingParam, match) {
     return incomingParam
   }
 }
+/**
+ *
+ * @param {any} handleObject - 任意格式数据
+ * @param {string} deletString - 删除的字段key
+ * 数据处理：去除任意格式数据中对象的特定字段
+ */
+handleDeletProperty(handleObject: any, deletString: any): void {
+      const objectType = typeof handleObject;
+      if(objectType === 'object') {
+        if(Array.isArray(handleObject)) {
+          for (const item of handleObject) {
+            this.handleDeletProperty(item,deletString)
+          }
+        } else {
+          if (Object.prototype.hasOwnProperty.call(handleObject, deletString)) {
+            delete handleObject[deletString];
+            return
+          } else {
+            for (const key in handleObject) {
+              if (Object.prototype.hasOwnProperty.call(handleObject, key)) {
+                const element = handleObject[key];
+                if(element) this.handleDeletProperty(element,deletString)
+              }
+            }
+          }
+        }
+      } else {
+        return
+      }
+    },
 ```
 
 
